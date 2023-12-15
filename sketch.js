@@ -16,6 +16,7 @@ let clockAngle;
 let totalTime = 60;
 let sc;
 let startSecond;
+let stime;
 
 
 let messages = [
@@ -53,6 +54,8 @@ function setup() {
   
   clockAngle = - 90;
 
+  stime = startClock();
+  
 
 }
 
@@ -67,7 +70,7 @@ function draw() {
   clockTimer();
   
 
-
+  
   
 
   
@@ -243,15 +246,24 @@ function clockTimer() {
 
 
 function updateClock() {
+  let elapsedtime =  (millis() - stime)/1000;
 
   sc = second() ;
   noStroke();
-  let end = map(sc,0,60,-90,270);
+  let end = map(elapsedtime,0,60,-90,270);
   let color = map(end,-90,270,25,255);
   fill(0,0,255,color);
   arc(width / 30 + (width - width / 30 * 2) * 0.9 + height / 12.75, height / 100 + height / 8.5 / 2, height / 8.5 , height / 8.5 , -90, end,PIE);
-  if (sc >= 59) {
+  if (elapsedtime >= 59) {
     console.log("YOU LOSE");
+    startClock();
   }
+  
 }
+function startClock(){
+  
+  let startclock = millis();
+  return startclock;
+  
 
+}
