@@ -18,6 +18,13 @@ let sc;
 let startSecond;
 let stime;
 
+let canvasSizeSelected = false;
+let canvasWidth;
+let canvasHeight;
+
+
+
+
 
 let messages = [
   "This is the first message.",
@@ -25,12 +32,40 @@ let messages = [
   "This is the third message.",
 
 ];
+
+
+
+
 function preload(){
   trashcan  = loadImage("assets/trash-bin.png");
 }
+
+
+function startGame(){
+  
+  const canvasSizeDropdown = document.querySelector("#canvasSize");
+  const selectedSize = canvasSizeDropdown.value;
+  const startButton = document.querySelector("#startButton");
+  const canvasSizeLabel = document.querySelector("#canvasSizeLabel");
+  const [widthStr, heightStr] = selectedSize.split("x");
+  canvasWidth = Number(widthStr);
+  canvasHeight = Number(heightStr);
+
+
+  canvasSizeDropdown.remove();
+  canvasSizeLabel.remove();
+  startButton.remove();
+  createCanvas(canvasWidth,canvasHeight);
+
+  canvasSizeSelected = true;
+  redraw();
+}
+
 function setup() {
+  
+ 
   angleMode(DEGREES);
-  createCanvas(windowWidth , windowHeight);
+  
   input = createInput();
   circleY = (height/7.5 + height/ 1.25 + height) / 2;
 
@@ -60,23 +95,36 @@ function setup() {
 }
 
 function draw() {
-  background(74,165,255);
-  
-  image(graphics,width/30,height/7.5);
-  cursorShape();
-  image(trashcan,width - width/12.5,height/12.5 * 2,trashcan.width/10,trashcan.height/10);
-  strokeWeight(4);
-  drawTextBox();
-  clockTimer();
-  
 
-  
-  
+  // Display a message or instructions until a canvas size is selected
+  if(canvasSizeSelected){
+    fill(0);
+    textSize(24);
+    textAlign(CENTER, CENTER);
+    text("Please choose a canvas size and click Start Game.", width / 2, height / 2);
 
-  
-  drawCircles();
-  
-  updateClock();
+
+
+
+    background(74,165,255);
+    
+    image(graphics,width/30,height/7.5);
+    cursorShape();
+    //image(trashcan,width - width/12.5,height/12.5 * 2,trashcan.width/10,trashcan.height/10);
+    strokeWeight(4);
+    drawTextBox();
+    clockTimer();
+    
+
+    
+    
+
+    
+    drawCircles();
+    
+    updateClock();
+
+  }
   
 }
 
