@@ -14,7 +14,7 @@ let circleY;
 let messageIndex = 0 ;
 let clockAngle;
 let totalTime = 60;
-let sc;
+
 let startSecond;
 let stime;
 
@@ -22,8 +22,9 @@ let canvasSizeSelected = false;
 let canvasWidth;
 let canvasHeight;
 
-
-
+let startingPosGraphics;
+let coloredCircles = [];
+let circleColors = ["red", "orange", "yellow", "lime", "blue", "fuchsia", "black", "white" ];
 
 
 let messages = [
@@ -55,22 +56,24 @@ function startGame(){
   canvasSizeDropdown.remove();
   canvasSizeLabel.remove();
   startButton.remove();
-  createCanvas(canvasWidth,canvasHeight);
+  //createCanvas(canvasWidth,canvasHeight);
+
 
   canvasSizeSelected = true;
-  redraw();
+  
+
 }
 
 function setup() {
+  canvasSizeSelected = true;
   
- 
+  
+  createCanvas(windowWidth,windowHeight);
   angleMode(DEGREES);
-  
+  startingPosGraphics = width/30;
   input = createInput();
-  circleY = (height/7.5 + height/ 1.25 + height) / 2;
-
   
-  graphics = createGraphics(width - width/30 * 2,height/1.25);
+  graphics = createGraphics(width - startingPosGraphics * 2,height/1.25);
   graphics.background(255);
   circlesD = sqrt(width*height)/30;
 
@@ -90,6 +93,11 @@ function setup() {
   clockAngle = - 90;
 
   stime = startClock();
+
+
+  for(let i = 0; i < 8; i++){
+    coloredCircles[i] = new ColoredCircles(startingPosGraphics + circlesD * i* 1.25 + circlesD , circleColors[i]); 
+  }
   
 
 }
@@ -98,10 +106,6 @@ function draw() {
 
   // Display a message or instructions until a canvas size is selected
   if(canvasSizeSelected){
-    fill(0);
-    textSize(24);
-    textAlign(CENTER, CENTER);
-    text("Please choose a canvas size and click Start Game.", width / 2, height / 2);
 
 
 
@@ -116,11 +120,13 @@ function draw() {
     clockTimer();
     
 
-    
+    for(let circles of coloredCircles){
+      circles.show();
+    }
     
 
     
-    drawCircles();
+ 
     
     updateClock();
 
@@ -146,37 +152,8 @@ function cursorShape(){
 }
 
 
-function drawCircles(){
-  strokeWeight(2);
-  for(let i = 0 ; i<8; i++){
 
-    fill(0);
-    if(i ===0 ){
-      fill(255,0,0);
-      
-    }
-    else if(i ===1 ){
-      fill(255,128,0);
-    }
-    else if(i ===2 ){
-      fill(255,255,0);
-    }
-    else if(i ===3 ){
-      fill(0,255,0);
-    }
-    else if(i ===4 ){
-      fill(0,0,255);
-    }
-    else if(i ===5 ){
-      fill(255,0,255);
-    }
-    else if(i ===7 ){
-      fill(255);
-    }
-    
-    circle(width/30 + circlesD * i* 1.25 + circlesD ,circleY,circlesD);
-  }
-}
+
 function mouseDragged(){
   
   graphics.stroke(colorstate);
@@ -201,8 +178,8 @@ function mouseWheel(event) {
 }
 
 
-function collideCirclePoint (x, y, cx, cy, d) {
-  if( dist(x,y,cx,cy) <= d/2 ){
+function collideCirclePoint (x, y, c, d) {
+  if( dist(x,y,c.x,c.y) <= d/2 ){
     return true;
   }
   return false;
@@ -235,36 +212,12 @@ function newText(){
 
 
 function mousePressed(){
-  
-  if(collideCirclePoint(mouseX,mouseY,width/30 + circlesD * 0* 1.25 + circlesD,circleY,circlesD) ){
-    colorstate = "red";
+  for(let circles of coloredCircles){
+    if(collideCirclePoint(mouseX,mouseY,circles.pos, circles.diameter)){
+      colorstate = circles.color;
+    }
+  }
 
-  }
-  else if(collideCirclePoint(mouseX,mouseY,width/30 + circlesD * 1* 1.25 + circlesD,circleY,circlesD) ){
-    colorstate = "orange";
-  }
-  else if(collideCirclePoint(mouseX,mouseY,width/30 + circlesD * 2* 1.25 + circlesD,circleY,circlesD) ){
-    colorstate = "yellow";
-  }
-  else if(collideCirclePoint(mouseX,mouseY,width/30 + circlesD * 3* 1.25 + circlesD,circleY,circlesD) ){
-    colorstate = "lime";
-  }
-  else if(collideCirclePoint(mouseX,mouseY,width/30 + circlesD * 4* 1.25 + circlesD,circleY,circlesD) ){
-    colorstate = "blue";
-  }
-  else if(collideCirclePoint(mouseX,mouseY,width/30 + circlesD * 5* 1.25 + circlesD,circleY,circlesD) ){
-    colorstate = "fuchsia";
-  }
-  else if(collideCirclePoint(mouseX,mouseY,width/30 + circlesD * 6* 1.25 + circlesD,circleY,circlesD)){
-    colorstate = "black";
-  }
-  else if(collideCirclePoint(mouseX,mouseY,width/30 + circlesD * 7* 1.25 + circlesD,circleY,circlesD) ){
-    colorstate = "white";
-  }
-  if(collideCirclePoint(mouseX,mouseY,width - width/12.5,height/12.5 * 2,100)){
-    graphics.background(255);
-    console.log("H");
-  }
 }
 
 function drawTextBox(){
@@ -296,7 +249,6 @@ function clockTimer() {
 function updateClock() {
   let elapsedtime =  (millis() - stime)/1000;
 
-  sc = second() ;
   noStroke();
   let end = map(elapsedtime,0,60,-90,270);
   let color = map(end,-90,270,25,255);
