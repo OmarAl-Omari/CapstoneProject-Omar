@@ -8,9 +8,9 @@ class ColoredCircles{
 
 
   }
-  show(){
+  show(s){
     strokeWeight(2);
     fill(this.color);
-    circle(this.pos.x,this.pos.y,this.diameter);
+    s.scribbleEllipse(this.pos.x,this.pos.y,this.diameter,this.diameter);
   }
 }

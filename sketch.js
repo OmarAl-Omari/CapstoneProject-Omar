@@ -34,8 +34,7 @@ let messages = [
 
 ];
 
-
-
+let scribble;
 
 function preload(){
   trashcan  = loadImage("assets/trash-bin.png");
@@ -60,15 +59,12 @@ function startGame(){
 
 
   canvasSizeSelected = true;
-  
 
 }
 
 function setup() {
-  canvasSizeSelected = true;
-  
-  
   createCanvas(windowWidth,windowHeight);
+  scribble = new Scribble();
   angleMode(DEGREES);
   startingPosGraphics = width/30;
   input = createInput();
@@ -108,7 +104,7 @@ function draw() {
   if(canvasSizeSelected){
 
 
-
+    randomSeed(100);
 
     background(74,165,255);
     
@@ -121,7 +117,7 @@ function draw() {
     
 
     for(let circles of coloredCircles){
-      circles.show();
+      circles.show(scribble);
     }
     
 
@@ -222,7 +218,9 @@ function mousePressed(){
 
 function drawTextBox(){
   fill(255);
-  rect(width/30,height/100,(width - width/30 * 2) * 0.9,height/8.5);
+  strokeWeight(3);
+  scribble.scribbleRect(width/30,height/100,(width - width/30 * 2) * 0.9,height/8.5 );
+
   fill(0); // Set text color
   textSize(16);
   noStroke();
@@ -248,7 +246,7 @@ function clockTimer() {
 
 function updateClock() {
   let elapsedtime =  (millis() - stime)/1000;
-
+  push();
   noStroke();
   let end = map(elapsedtime,0,60,-90,270);
   let color = map(end,-90,270,25,255);
@@ -257,8 +255,9 @@ function updateClock() {
   if (elapsedtime >= 59) {
     console.log("YOU LOSE");
     startClock();
+
   }
-  
+  pop();  
 }
 function startClock(){
   
