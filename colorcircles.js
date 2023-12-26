@@ -11,6 +11,6 @@ class ColoredCircles{
   show(s){
     strokeWeight(2);
     fill(this.color);
-    s.scribbleEllipse(this.pos.x,this.pos.y,this.diameter,this.diameter);
+    s.buildEllipse(this.pos.x,this.pos.y,this.diameter/2,this.diameter/2,width/1000,1);
   }
 }

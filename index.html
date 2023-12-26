@@ -19,7 +19,41 @@
         text-shadow: 0 0 5px #dd0f0ffd;
       }
     </style>
-    
+    <style>
+      .canvasSizeLabel {
+       position: absolute;
+       font-size: 20px; /* Adjust the font size as needed */
+
+       left: 100px; 
+       top: 5px;
+      }
+      .canvasSizeDropdown {
+        position: absolute;
+        left: 50%;
+        top: 30%;
+        transform: translate(-50%, -50%);
+        width: 10%; /* Adjust the width as needed */
+       
+        height: 5%;
+        font-size: 14px;
+        color: #1a6906;
+        background-color: #3498db; 
+
+        border: 2px solid rgb(167, 28, 209);
+        cursor: pointer;
+      }
+      .startButton {
+      position: absolute;
+      width: 150px; /* Adjust the width as needed */
+      height: 30px; /* Adjust the height as needed */
+      font-size: 16px; /* Adjust the font size as needed */
+
+      /* Calculate center position of the canvas */
+      left: 50%;
+      top: 60%; /* Adjust the vertical position as needed */
+      transform: translate(-50%, -50%); /* Center the button */
+    }
+    </style>
 
     <!-- Once your project is working completely, you can comment out the link
        to p5.js above, and instead link to this minified version. The minified
@@ -31,17 +65,18 @@
   </head>
 
   <body>
-    <label id="canvasSizeLabel" for="canvasSize">Choose a canvas size:</label>
-    <select id="canvasSize">
+    <label id="canvasSizeLabel" for="canvasSize" class="canvasSizeLabel">Choose a canvas size:</label>
+    <select id="canvasSize" class="canvasSizeDropdown">
       <option value= "400x200"> 400x200</option>
       <option value= "800x600"> 800x600</option>
       <option value= "1200x800"> 1200x800</option>
       <option value= "1800x800"> 1800x880</option>
+      <option value="windowWidthxwindowHeight">windowWidth x windowHeight</option> 
 
 
       
     </select>
-    <button id="startButton" onclick="startGame()"> Start Game</button>
+    <button id="startButton" class="startButton" onclick="startGame()"> Start Game</button>
 
 
     <script src="colorcircles.js"></script>

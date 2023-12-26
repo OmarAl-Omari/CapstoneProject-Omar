@@ -22,11 +22,10 @@ let canvasSizeSelected = false;
 let canvasWidth;
 let canvasHeight;
 
-let startingPosGraphics;
+let xPosOfGraphics;
+let yPosOfGraphics;
 let coloredCircles = [];
 let circleColors = ["red", "orange", "yellow", "lime", "blue", "fuchsia", "black", "white" ];
-
-
 let messages = [
   "This is the first message.",
   "This is the second message.",
@@ -41,42 +40,22 @@ function preload(){
 }
 
 
-function startGame(){
-  
-  const canvasSizeDropdown = document.querySelector("#canvasSize");
-  const selectedSize = canvasSizeDropdown.value;
-  const startButton = document.querySelector("#startButton");
-  const canvasSizeLabel = document.querySelector("#canvasSizeLabel");
-  const [widthStr, heightStr] = selectedSize.split("x");
-  canvasWidth = Number(widthStr);
-  canvasHeight = Number(heightStr);
 
 
-  canvasSizeDropdown.remove();
-  canvasSizeLabel.remove();
-  startButton.remove();
-  //createCanvas(canvasWidth,canvasHeight);
+function setPosAndSizes(){
+  xPosOfGraphics = width/30;
+  yPosOfGraphics = height/7.5;
 
-
-  canvasSizeSelected = true;
-
-}
-
-function setup() {
-  createCanvas(windowWidth,windowHeight);
-  scribble = new Scribble();
-  angleMode(DEGREES);
-  startingPosGraphics = width/30;
   input = createInput();
   
-  graphics = createGraphics(width - startingPosGraphics * 2,height/1.25);
+  graphics = createGraphics(width - xPosOfGraphics * 2,height/1.25);
   graphics.background(255);
   circlesD = sqrt(width*height)/30;
 
 
   input.class("custom-input");
   input.size(graphics.width / 3,graphics.height/20);
-  input.position(graphics.width/2 - input.width/2 + width/30, (height/7.5 + height/ 1.25 + height) / 2 - input.height/2);
+  input.position(graphics.width/2 - input.width/2 + xPosOfGraphics, (yPosOfGraphics + graphics.height + height) / 2 - input.height/2);
   input.style("font-size", "22px");
   input.style("text-transform", "uppercase");
   input.attribute("placeholder", "GUESS HERE");
@@ -90,10 +69,52 @@ function setup() {
 
   stime = startClock();
 
-
   for(let i = 0; i < 8; i++){
-    coloredCircles[i] = new ColoredCircles(startingPosGraphics + circlesD * i* 1.25 + circlesD , circleColors[i]); 
+    coloredCircles[i] = new ColoredCircles(xPosOfGraphics + circlesD * i* 1.25 + circlesD , circleColors[i]); 
   }
+
+}
+
+
+
+
+function startGame(){
+  
+  const canvasSizeDropdown = document.querySelector("#canvasSize");
+  const selectedSize = canvasSizeDropdown.value;
+  const startButton = document.querySelector("#startButton");
+  const canvasSizeLabel = document.querySelector("#canvasSizeLabel");
+  const [widthStr, heightStr] = selectedSize.split("x");
+
+
+  if (selectedSize === "windowWidthxwindowHeight") {
+    // Set canvas size based on window's width and height
+    canvasWidth = window.innerWidth;
+    canvasHeight = window.innerHeight;
+  }
+  else{
+    canvasWidth = Number(widthStr);
+    canvasHeight = Number(heightStr);
+  }
+
+  canvasSizeDropdown.remove();
+  canvasSizeLabel.remove();
+  startButton.remove();
+  createCanvas(canvasWidth,canvasHeight);
+
+
+  canvasSizeSelected = true;
+  setPosAndSizes();
+
+}
+
+function setup() {
+  createCanvas(windowWidth,windowHeight);
+  background(127);
+  scribble = new Scribble();
+  angleMode(DEGREES);
+
+
   
 
 }
@@ -108,7 +129,7 @@ function draw() {
 
     background(74,165,255);
     
-    image(graphics,width/30,height/7.5);
+    image(graphics,xPosOfGraphics,yPosOfGraphics);
     cursorShape();
     //image(trashcan,width - width/12.5,height/12.5 * 2,trashcan.width/10,trashcan.height/10);
     strokeWeight(4);
@@ -132,7 +153,7 @@ function draw() {
 
 
 function cursorShape(){
-  if(mouseX>=width/30 && mouseX <= width/30 + graphics.width && mouseY >= height/7.5 && mouseY <= height/7.5 + graphics.height){
+  if(mouseX>=xPosOfGraphics && mouseX <= xPosOfGraphics + graphics.width && mouseY >= yPosOfGraphics && mouseY <= yPosOfGraphics + graphics.height){
     noCursor();
     push();
     stroke(0);
@@ -154,7 +175,7 @@ function mouseDragged(){
   
   graphics.stroke(colorstate);
   graphics.strokeWeight(strokeW);
-  graphics.line(mouseX-width/30,mouseY-height/7.5,pmouseX-width/30,pmouseY-height/7.5);
+  graphics.line(mouseX-xPosOfGraphics,mouseY-yPosOfGraphics,pmouseX-xPosOfGraphics,pmouseY-yPosOfGraphics);
 
 }
 
@@ -186,6 +207,7 @@ function collideCirclePoint (x, y, c, d) {
 function keyPressed(){
   if(key === " "){
     graphics.background(255);
+
   }
 
   if (keyCode === RIGHT_ARROW && messageIndex < messages.length - 1) {
@@ -219,12 +241,12 @@ function mousePressed(){
 function drawTextBox(){
   fill(255);
   strokeWeight(3);
-  scribble.scribbleRect(width/30,height/100,(width - width/30 * 2) * 0.9,height/8.5 );
+  rect(xPosOfGraphics,height/100,(width - xPosOfGraphics * 2) * 0.9,height/8.5 );
 
   fill(0); // Set text color
   textSize(16);
   noStroke();
-  let textX = (width - width / 30 * 2) * 0.9  ; 
+  let textX = (width - xPosOfGraphics * 2) * 0.9  ; 
   let textY = height / 100 + height / 8.5 ; 
   textAlign(LEFT,TOP);
   let message1 = messages[messageIndex]; 
@@ -236,7 +258,7 @@ function clockTimer() {
   
   stroke(0);
   fill(255);
-  circle(width / 30 + (width - width / 30 * 2) * 0.9 + height / 12.75, height / 100 + height / 8.5 / 2, height / 8.5);
+  circle(xPosOfGraphics + (width - xPosOfGraphics * 2) * 0.9 + height / 12.75, height / 100 + height / 8.5 / 2, height / 8.5);
 
 
 
@@ -251,7 +273,7 @@ function updateClock() {
   let end = map(elapsedtime,0,60,-90,270);
   let color = map(end,-90,270,25,255);
   fill(0,0,255,color);
-  arc(width / 30 + (width - width / 30 * 2) * 0.9 + height / 12.75, height / 100 + height / 8.5 / 2, height / 8.5 , height / 8.5 , -90, end,PIE);
+  arc(xPosOfGraphics + (width - xPosOfGraphics * 2) * 0.9 + height / 12.75, height / 100 + height / 8.5 / 2, height / 8.5 , height / 8.5 , -90, end,PIE);
   if (elapsedtime >= 59) {
     console.log("YOU LOSE");
     startClock();
