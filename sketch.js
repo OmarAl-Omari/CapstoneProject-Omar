@@ -27,13 +27,29 @@ let yPosOfGraphics;
 let coloredCircles = [];
 let circleColors = ["red", "orange", "yellow", "lime", "blue", "fuchsia", "black", "white" ];
 let messages = [
-  "This is the first message.",
-  "This is the second message.",
-  "This is the third message.",
-
+  ["This is the first message.",
+    "This is the second message.",
+    "This is the third message."],
+  ["This is the second round",
+    "hello"
+  ],
+  ["This is the third round"],
+  ["This is the fourth round"],
+  ["This is the fifth round"],
+  ["This is the sixth round"],
+  ["This is the seventh round"],
+  ["This is the eigthth round"],
+  ["This is the nineth round"],
+  ["This is the tenth round"],
 ];
+let answers = ["HI","","","","","","","","",""];
+
+let GameRound = 0;
 
 let scribble;
+
+let UserAnswer;
+
 
 function preload(){
   trashcan  = loadImage("assets/trash-bin.png");
@@ -124,7 +140,7 @@ function draw() {
   // Display a message or instructions until a canvas size is selected
   if(canvasSizeSelected){
 
-
+    
     randomSeed(100);
 
     background(74,165,255);
@@ -146,7 +162,10 @@ function draw() {
  
     
     updateClock();
-
+    if(UserAnswer === answers[GameRound]){
+      messageIndex = 0;
+      GameRound++;
+    }
   }
   
 }
@@ -210,7 +229,7 @@ function keyPressed(){
 
   }
 
-  if (keyCode === RIGHT_ARROW && messageIndex < messages.length - 1) {
+  if (keyCode === RIGHT_ARROW && messageIndex < messages[GameRound].length - 1) {
     messageIndex++;
   } 
   else if (keyCode === LEFT_ARROW && messageIndex > 0) {
@@ -223,8 +242,10 @@ function keyPressed(){
 
 
 function newText(){
-  console.log(input.value());
+  
+  UserAnswer = input.value().toUpperCase();
   input.value("");
+
 }
 
 
@@ -249,7 +270,7 @@ function drawTextBox(){
   let textX = (width - xPosOfGraphics * 2) * 0.9  ; 
   let textY = height / 100 + height / 8.5 ; 
   textAlign(LEFT,TOP);
-  let message1 = messages[messageIndex]; 
+  let message1 = messages[GameRound][messageIndex]; 
   text(message1, width / 25, height / 36,textX,textY);
 
 }
@@ -275,7 +296,6 @@ function updateClock() {
   fill(0,0,255,color);
   arc(xPosOfGraphics + (width - xPosOfGraphics * 2) * 0.9 + height / 12.75, height / 100 + height / 8.5 / 2, height / 8.5 , height / 8.5 , -90, end,PIE);
   if (elapsedtime >= 59) {
-    console.log("YOU LOSE");
     startClock();
 
   }
