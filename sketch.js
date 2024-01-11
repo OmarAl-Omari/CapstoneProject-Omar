@@ -42,7 +42,7 @@ let messages = [
   ["This is the nineth round"],
   ["This is the tenth round"],
 ];
-let answers = ["HI","","","","","","","","",""];
+let answers = ["1","2","3","4","5","6","7","8","9","10"];
 
 let GameRound = 0;
 
@@ -51,6 +51,9 @@ let scribble;
 let UserAnswer;
 
 
+let transitionStartTime;
+let transitionDuration = 2000;
+let Transition = false;
 function preload(){
   trashcan  = loadImage("assets/trash-bin.png");
 }
@@ -162,14 +165,38 @@ function draw() {
  
     
     updateClock();
-    if(UserAnswer === answers[GameRound]){
-      messageIndex = 0;
-      GameRound++;
+    if(UserAnswer === answers[GameRound] ){
+      Transition = true;
+      startTransition();
+      UserAnswer = '';
+    }
+
+    if(Transition ){
+      if(millis() - transitionStartTime < transitionDuration){
+        drawTransitionScreen();
+      }
+      else{
+        changeRound();
+        Transition = false;
+      }
+
     }
   }
   
 }
 
+
+function changeRound(){
+  messageIndex = 0;
+  GameRound++;
+}
+function drawTransitionScreen(){
+  text("HI",width/2,height/2);
+}
+function startTransition(){
+  transitionStartTime = millis();
+
+}
 
 function cursorShape(){
   if(mouseX>=xPosOfGraphics && mouseX <= xPosOfGraphics + graphics.width && mouseY >= yPosOfGraphics && mouseY <= yPosOfGraphics + graphics.height){
@@ -307,4 +334,9 @@ function startClock(){
   return startclock;
   
 
+}
+
+
+function TransitionScreen(){
+  text("hello",0,0);
 }
