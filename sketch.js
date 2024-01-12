@@ -49,10 +49,11 @@ let GameRound = 0;
 let scribble;
 
 let UserAnswer;
+let elapsedtime;
 
 
 let transitionStartTime;
-let transitionDuration = 2000;
+let transitionDuration = 5000;
 let Transition = false;
 function preload(){
   trashcan  = loadImage("assets/trash-bin.png");
@@ -141,7 +142,7 @@ function setup() {
 function draw() {
 
   // Display a message or instructions until a canvas size is selected
-  if(canvasSizeSelected){
+  if(canvasSizeSelected && !Transition){
 
     
     randomSeed(100);
@@ -165,22 +166,29 @@ function draw() {
  
     
     updateClock();
-    if(UserAnswer === answers[GameRound] ){
+    if(UserAnswer === answers[GameRound] || elapsedtime > 60 ){
       Transition = true;
       startTransition();
-      UserAnswer = '';
+      UserAnswer = "";
     }
 
-    if(Transition ){
-      if(millis() - transitionStartTime < transitionDuration){
-        drawTransitionScreen();
-      }
-      else{
-        changeRound();
-        Transition = false;
-      }
 
+  }
+
+  if(Transition ){
+    if(millis() - transitionStartTime < transitionDuration){
+      stime = startClock();
+      input.style("display", "none");
+      background(0,millis()%60 * 0.5);
+      drawTransitionScreen();
     }
+    else{
+      changeRound();
+      graphics.background(255);
+      Transition = false;
+      input.style("display", "block");
+    }
+
   }
   
 }
@@ -315,7 +323,7 @@ function clockTimer() {
 
 
 function updateClock() {
-  let elapsedtime =  (millis() - stime)/1000;
+  elapsedtime =  (millis() - stime)/1000;
   push();
   noStroke();
   let end = map(elapsedtime,0,60,-90,270);
@@ -332,8 +340,6 @@ function startClock(){
   
   let startclock = millis();
   return startclock;
-  
-
 }
 
 
