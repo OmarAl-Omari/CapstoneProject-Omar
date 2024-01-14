@@ -27,9 +27,9 @@ let yPosOfGraphics;
 let coloredCircles = [];
 let circleColors = ["red", "orange", "yellow", "lime", "blue", "fuchsia", "black", "white" ];
 let messages = [
-  ["This is the first message.",
-    "This is the second message.",
-    "This is the third message."],
+  ["Draw a square then I triangle above it",
+    "Do not forget to put square eyes",
+    "and a lengthy mouth"],
   ["This is the second round",
     "hello"
   ],
@@ -42,7 +42,7 @@ let messages = [
   ["This is the nineth round"],
   ["This is the tenth round"],
 ];
-let answers = ["1","2","3","4","5","6","7","8","9","10"];
+let answers = ["HOUSE","2","3","4","5","6","7","8","9","10"];
 
 let GameRound = 0;
 
@@ -295,10 +295,33 @@ function mousePressed(){
 }
 
 function drawTextBox(){
+  
   fill(255);
-  strokeWeight(3);
-  rect(xPosOfGraphics,height/100,(width - xPosOfGraphics * 2) * 0.9,height/8.5 );
+  strokeWeight(5);
+  stroke(255);
+  let textBoxWidth = (width - xPosOfGraphics * 2) * 0.9;
+  let textBoxHeight = height/8.5;
+  let textBoxX = xPosOfGraphics +textBoxWidth/2;
+  let textBoxY = height/100 + textBoxHeight/2;
+  let XcordsFilling = [textBoxX];
+  let YcordsFilling = [textBoxY];
 
+  for(let i = 0; i< 360; i+= 1){
+    let x = textBoxX + textBoxWidth / 2 * cos((i));
+    let y = textBoxY + textBoxHeight / 2 * sin((i));
+    XcordsFilling.push(x);
+    YcordsFilling.push(y);
+  }
+  scribble.scribbleRect(textBoxX,textBoxY,textBoxWidth,textBoxHeight);
+  stroke(255);
+  strokeWeight(7);
+  scribble.scribbleFilling(XcordsFilling,YcordsFilling,20,210);
+
+  rectMode(CENTER);
+  fill(255,100);
+  noStroke();
+  rect(textBoxX,textBoxY,textBoxWidth,textBoxHeight);
+  rectMode(CORNER);
   fill(0); // Set text color
   textSize(16);
   noStroke();
@@ -308,13 +331,18 @@ function drawTextBox(){
   let message1 = messages[GameRound][messageIndex]; 
   text(message1, width / 25, height / 36,textX,textY);
 
+
+
 }
 function clockTimer() {
   // Draw the circle
   
   stroke(0);
+  strokeWeight(5);
   fill(255);
-  circle(xPosOfGraphics + (width - xPosOfGraphics * 2) * 0.9 + height / 12.75, height / 100 + height / 8.5 / 2, height / 8.5);
+  //circle(xPosOfGraphics + (width - xPosOfGraphics * 2) * 0.9 + height / 12.75, height / 100 + height / 8.5 / 2, height / 8.5);
+
+  scribble.buildEllipse(xPosOfGraphics + (width - xPosOfGraphics * 2) * 0.9 + height / 12.75, height / 100 + height / 8.5 / 2, height / 17,height/17,width/750,0);
 
 
 
@@ -327,7 +355,7 @@ function updateClock() {
   push();
   noStroke();
   let end = map(elapsedtime,0,60,-90,270);
-  let color = map(end,-90,270,25,255);
+  let color = map(end,-90,270,255,25);
   fill(0,0,255,color);
   arc(xPosOfGraphics + (width - xPosOfGraphics * 2) * 0.9 + height / 12.75, height / 100 + height / 8.5 / 2, height / 8.5 , height / 8.5 , -90, end,PIE);
   if (elapsedtime >= 59) {
@@ -346,3 +374,5 @@ function startClock(){
 function TransitionScreen(){
   text("hello",0,0);
 }
+
+

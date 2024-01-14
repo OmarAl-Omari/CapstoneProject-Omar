@@ -15,10 +15,10 @@ The handy library is licensed under the GNU Lesser General Public License: http:
 
 function Scribble(p) {
   this.sketch = p || window;
-  this.bowing = 1;
-  this.roughness = 1;
+  this.bowing = 0;
+  this.roughness = 1.3;
   this.maxOffset = 2;
-  this.numEllipseSteps = 9;
+  this.numEllipseSteps = 100;
   this.ellipseInc = (Math.PI*2)/this.numEllipseSteps;
 
   this.getOffset = function( minVal, maxVal ) {
