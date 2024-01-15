@@ -5,7 +5,7 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 let strokeW = 10;
-let trashcan;
+
 let graphics;
 let colorstate = "black";
 let input;
@@ -55,8 +55,35 @@ let elapsedtime;
 let transitionStartTime;
 let transitionDuration = 5000;
 let Transition = false;
+let skip = false;
+let numSkips = 3;
+
+
+let trashcan;
+let trashcanOpen;
+let heart;
+let heartWidth;
+let rightarrow;
+let rightarrowX;
+let rightarrowY;
+let rightarrowWidth;
+let rightarrowHeight;
+let trashcanX, trashcanY, trashcanWidth, trashcanHeight;
+
+let font;
+
+let X;
+let counterForX;
+let startTimerX = true;
+
+
 function preload(){
-  trashcan  = loadImage("assets/trash-bin.png");
+  trashcan  = loadImage("assets/trashClosed.png");
+  trashcanOpen = loadImage("assets/trashOpened.png")
+  rightarrow = loadImage("assets/rightarrow.png");
+  heart = loadImage("assets/Heart.png");
+  font = loadFont("assets/Font.ttf");
+  X = loadImage("assets/X.png");
 }
 
 
@@ -82,7 +109,7 @@ function setPosAndSizes(){
   input.style("text-align", "center");
   input.style("::placeholder", "text-shadow: 0 0 5px #000");
   input.style("font-weight", "bold");
-  input.style("border", "2px solid #000");
+  input.style("border", "4px solid #000");
   input.changed(newText);
   
   clockAngle = - 90;
@@ -91,7 +118,22 @@ function setPosAndSizes(){
 
   for(let i = 0; i < 8; i++){
     coloredCircles[i] = new ColoredCircles(xPosOfGraphics + circlesD * i* 1.25 + circlesD , circleColors[i]); 
+
+
   }
+
+  // Arrow image
+  rightarrowWidth = width/30;
+  rightarrowHeight = rightarrowWidth *(rightarrow.height/rightarrow.width);
+
+  rightarrowX = graphics.width;
+  rightarrowY = height -rightarrowHeight;
+  
+  heartWidth = rightarrowHeight/1.5 * (heart.width/heart.height);
+  
+  
+
+ 
 
 }
 
@@ -143,40 +185,73 @@ function draw() {
 
   // Display a message or instructions until a canvas size is selected
   if(canvasSizeSelected && !Transition){
-
     
-    randomSeed(100);
-
     background(74,165,255);
     
-    image(graphics,xPosOfGraphics,yPosOfGraphics);
-    cursorShape();
-    //image(trashcan,width - width/12.5,height/12.5 * 2,trashcan.width/10,trashcan.height/10);
-    strokeWeight(4);
     drawTextBox();
+    borderForGraphics();
+    
+    randomSeed(100);
+    image(rightarrow,rightarrowX,rightarrowY,rightarrowWidth,rightarrowHeight);
+    drawingHearts();
+   
+    
+
+
+    
+    image(graphics,xPosOfGraphics,yPosOfGraphics);
+    displayAndAnimateTrash();
+
+    cursorShape();
+ 
+    strokeWeight(4);
+    
     clockTimer();
     
 
     for(let circles of coloredCircles){
       circles.show(scribble);
+
     }
+    
     
 
     
  
     
     updateClock();
-    if(UserAnswer === answers[GameRound] || elapsedtime > 60 ){
+    if(UserAnswer !== answers[GameRound] && UserAnswer!== undefined){
+      if(startTimerX){
+        counterForX = startClock();
+      }
+      startTimerX = false;
+      push();
+      imageMode(CENTER);
+      image(X,width/2,height/2,width/3, width/3* (X.height/X.width));
+      pop();
+      if(millis() - counterForX > 500){
+        UserAnswer = undefined;
+        startTimerX = true;
+       
+      }
+    }
+
+    if(UserAnswer === answers[GameRound] || elapsedtime > 60 || skip){
       Transition = true;
       startTransition();
-      UserAnswer = "";
+      UserAnswer = undefined
+      if(skip){
+        numSkips -= 1;
+      }
     }
+
 
 
   }
 
   if(Transition ){
     if(millis() - transitionStartTime < transitionDuration){
+      
       stime = startClock();
       input.style("display", "none");
       background(0,millis()%60 * 0.5);
@@ -186,6 +261,8 @@ function draw() {
       changeRound();
       graphics.background(255);
       Transition = false;
+      skip = false;
+      
       input.style("display", "block");
     }
 
@@ -193,7 +270,45 @@ function draw() {
   
 }
 
+function borderForGraphics(){
+  noFill();
+  strokeWeight(5);
+  stroke(0);
+  //rect(xPosOfGraphics,yPosOfGraphics,graphics.width,graphics.height);
+  scribble.scribbleRect(xPosOfGraphics + graphics.width/2,yPosOfGraphics + graphics.height/2,graphics.width,graphics.height);
 
+}
+function displayAndAnimateTrash(){
+  trashcanWidth = width/50;
+  trashcanHeight = trashcanWidth * (trashcan.height/trashcan.width);
+  trashcanX = graphics.width;
+  trashcanY = yPosOfGraphics + trashcanWidth/2;
+  if(collidePointRect(mouseX,mouseY,trashcanX,trashcanY,trashcanWidth,trashcanHeight)){
+    image(trashcanOpen,trashcanX,trashcanY,trashcanWidth,trashcanHeight);
+  }
+  else{
+    image(trashcan,trashcanX,trashcanY,trashcanWidth,trashcanHeight);
+  }
+}
+
+function drawingHearts(){
+  if(numSkips === 3){
+    image(heart,rightarrowX - heartWidth * 4,rightarrowY + heartWidth/4,heartWidth,rightarrowHeight/1.5);
+    image(heart,rightarrowX - heartWidth * 3,rightarrowY + heartWidth/4,heartWidth,rightarrowHeight/1.5);
+    image(heart,rightarrowX - heartWidth * 2,rightarrowY + heartWidth/4,heartWidth,rightarrowHeight/1.5);
+
+  }
+  else if(numSkips === 2){
+
+    image(heart,rightarrowX - heartWidth * 4,rightarrowY + heartWidth/4,heartWidth,rightarrowHeight/1.5);
+    image(heart,rightarrowX - heartWidth * 3,rightarrowY + heartWidth/4,heartWidth,rightarrowHeight/1.5);
+
+  }
+  else if(numSkips === 1){
+    image(heart,rightarrowX - heartWidth * 4,rightarrowY + heartWidth/4,heartWidth,rightarrowHeight/1.5);
+
+  }
+}
 function changeRound(){
   messageIndex = 0;
   GameRound++;
@@ -207,7 +322,10 @@ function startTransition(){
 }
 
 function cursorShape(){
-  if(mouseX>=xPosOfGraphics && mouseX <= xPosOfGraphics + graphics.width && mouseY >= yPosOfGraphics && mouseY <= yPosOfGraphics + graphics.height){
+  if(Transition){
+    cursor(WAIT);
+  }
+  else if(mouseX>=xPosOfGraphics && mouseX <= xPosOfGraphics + graphics.width && mouseY >= yPosOfGraphics && mouseY <= yPosOfGraphics + graphics.height){
     noCursor();
     push();
     stroke(0);
@@ -249,12 +367,7 @@ function mouseWheel(event) {
 }
 
 
-function collideCirclePoint (x, y, c, d) {
-  if( dist(x,y,c.x,c.y) <= d/2 ){
-    return true;
-  }
-  return false;
-}
+
 
 
 
@@ -287,15 +400,24 @@ function newText(){
 
 function mousePressed(){
   for(let circles of coloredCircles){
-    if(collideCirclePoint(mouseX,mouseY,circles.pos, circles.diameter)){
+    if(collidePointCircle(mouseX,mouseY,circles.pos.x,circles.pos.y, circles.diameter)){
       colorstate = circles.color;
     }
+  }
+
+  if(collidePointRect(mouseX,mouseY,rightarrowX,rightarrowY + rightarrowHeight/3,rightarrowWidth,rightarrowHeight/4) && numSkips>0){
+    
+    skip = true;
+  }
+  if(collidePointRect(mouseX,mouseY,trashcanX,trashcanY,trashcanWidth,trashcanHeight)){
+    graphics.background(255);
   }
 
 }
 
 function drawTextBox(){
-  
+ 
+  randomSeed();
   fill(255);
   strokeWeight(5);
   stroke(255);
@@ -322,15 +444,19 @@ function drawTextBox(){
   noStroke();
   rect(textBoxX,textBoxY,textBoxWidth,textBoxHeight);
   rectMode(CORNER);
-  fill(0); // Set text color
-  textSize(16);
-  noStroke();
+
+
+  fill(255,0,0); 
+  stroke(0);
   let textX = (width - xPosOfGraphics * 2) * 0.9  ; 
   let textY = height / 100 + height / 8.5 ; 
   textAlign(LEFT,TOP);
+  textFont(BOLD,32);
   let message1 = messages[GameRound][messageIndex]; 
   text(message1, width / 25, height / 36,textX,textY);
-
+  
+  
+  
 
 
 }
