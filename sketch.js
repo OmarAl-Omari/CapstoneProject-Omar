@@ -4,7 +4,7 @@
 //
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
-let strokeW = 10;
+let strokeThickValue= 10;
 
 let graphics;
 let colorstate = "black";
@@ -46,7 +46,7 @@ let answers = ["HOUSE","2","3","4","5","6","7","8","9","10"];
 
 let GameRound = 0;
 
-let scribble;
+let scribble = new Scribble();
 
 let UserAnswer;
 let elapsedtime;
@@ -75,7 +75,7 @@ let font;
 let X;
 let counterForX;
 let startTimerX = true;
-
+let lines = [];
 
 function preload(){
   trashcan  = loadImage("assets/trashClosed.png");
@@ -99,7 +99,7 @@ function setPosAndSizes(){
   graphics.background(255);
   circlesD = sqrt(width*height)/30;
 
-
+  
   input.class("custom-input");
   input.size(graphics.width / 3,graphics.height/20);
   input.position(graphics.width/2 - input.width/2 + xPosOfGraphics, (yPosOfGraphics + graphics.height + height) / 2 - input.height/2);
@@ -109,7 +109,7 @@ function setPosAndSizes(){
   input.style("text-align", "center");
   input.style("::placeholder", "text-shadow: 0 0 5px #000");
   input.style("font-weight", "bold");
-  input.style("border", "4px solid #000");
+  
   input.changed(newText);
   
   clockAngle = - 90;
@@ -173,9 +173,10 @@ function startGame(){
 function setup() {
   createCanvas(windowWidth,windowHeight);
   background(127);
-  scribble = new Scribble();
+  
+ 
   angleMode(DEGREES);
-
+ 
 
   
 
@@ -185,21 +186,29 @@ function draw() {
 
   // Display a message or instructions until a canvas size is selected
   if(canvasSizeSelected && !Transition){
-    
+
     background(74,165,255);
-    
+
+    image(graphics,xPosOfGraphics,yPosOfGraphics);
+
+    randomSeed();
     drawTextBox();
-    borderForGraphics();
-    
+    borderForGraphicsAndInput();
+
+    for (let i = 0; i < lines.length; i++) {
+      stroke(lines[i].lineColor); 
+      strokeWeight(lines[i].lineThickness);
+      scribble.scribbleLine(lines[i].x1, lines[i].y1, lines[i].x2, lines[i].y2);
+    }
     randomSeed(100);
     image(rightarrow,rightarrowX,rightarrowY,rightarrowWidth,rightarrowHeight);
     drawingHearts();
    
     
-
+    
 
     
-    image(graphics,xPosOfGraphics,yPosOfGraphics);
+    
     displayAndAnimateTrash();
 
     cursorShape();
@@ -270,12 +279,16 @@ function draw() {
   
 }
 
-function borderForGraphics(){
+function borderForGraphicsAndInput(){
   noFill();
   strokeWeight(5);
   stroke(0);
   //rect(xPosOfGraphics,yPosOfGraphics,graphics.width,graphics.height);
   scribble.scribbleRect(xPosOfGraphics + graphics.width/2,yPosOfGraphics + graphics.height/2,graphics.width,graphics.height);
+
+  strokeWeight(5);
+  stroke(0);
+  scribble.scribbleRect(input.x + input.width/2,input.y + input.height/2,input.width,input.height);
 
 }
 function displayAndAnimateTrash(){
@@ -327,12 +340,13 @@ function cursorShape(){
   }
   else if(mouseX>=xPosOfGraphics && mouseX <= xPosOfGraphics + graphics.width && mouseY >= yPosOfGraphics && mouseY <= yPosOfGraphics + graphics.height){
     noCursor();
-    push();
-    stroke(0);
-    rectMode(CENTER);
+   
+    noStroke();
+
+
     fill(colorstate);
-    rect(mouseX,mouseY,strokeW,strokeW,50);
-    pop();
+    circle(mouseX,mouseY,strokeThickValue,strokeThickValue);
+ 
     
   }
   else{
@@ -345,24 +359,38 @@ function cursorShape(){
 
 function mouseDragged(){
   
-  graphics.stroke(colorstate);
-  graphics.strokeWeight(strokeW);
-  graphics.line(mouseX-xPosOfGraphics,mouseY-yPosOfGraphics,pmouseX-xPosOfGraphics,pmouseY-yPosOfGraphics);
+  //graphics.stroke(colorstate);
+  //graphics.strokeWeight(strokeW);
+
+
+  
+  lines.push({
+    x1: mouseX,
+    y1: mouseY,
+    x2: pmouseX,
+    y2: pmouseY,
+    lineColor: colorstate,
+    lineThickness: strokeThickValue
+  });
+
 
 }
 
 
 
 
+
+
+
 function mouseWheel(event) {
   //Making sure that when decreasing the size it is not negative and putting a limit of 10 to  the size
-  if (strokeW+ event.delta < 0){
-    if (strokeW >10){
-      strokeW -= Math.abs(event.delta/10);
+  if (strokeThickValue+ event.delta < 0){
+    if (strokeThickValue>10){
+      strokeThickValue-= Math.abs(event.delta/10);
     }
   }
   else{
-    strokeW += event.delta/10;
+    strokeThickValue+= event.delta/10;
   }
 }
 
@@ -373,7 +401,7 @@ function mouseWheel(event) {
 
 function keyPressed(){
   if(key === " "){
-    graphics.background(255);
+    clearLines();
 
   }
 
@@ -396,7 +424,9 @@ function newText(){
 
 }
 
-
+function clearLines(){
+  lines = [];
+}
 
 function mousePressed(){
   for(let circles of coloredCircles){
@@ -410,14 +440,15 @@ function mousePressed(){
     skip = true;
   }
   if(collidePointRect(mouseX,mouseY,trashcanX,trashcanY,trashcanWidth,trashcanHeight)){
-    graphics.background(255);
+    clearLines();
+
   }
 
 }
 
 function drawTextBox(){
  
-  randomSeed();
+  
   fill(255);
   strokeWeight(5);
   stroke(255);
