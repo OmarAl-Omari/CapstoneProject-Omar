@@ -77,6 +77,8 @@ let counterForX;
 let startTimerX = true;
 let lines = [];
 
+let toggleSwitch, toggleSwitchX, toggleSwitchY, toggleSwitchWidth, toggleSwitchHeight;
+
 function preload(){
   trashcan  = loadImage("assets/trashClosed.png");
   trashcanOpen = loadImage("assets/trashOpened.png")
@@ -92,6 +94,7 @@ function preload(){
 function setPosAndSizes(){
   xPosOfGraphics = width/30;
   yPosOfGraphics = height/7.5;
+
 
   input = createInput();
   
@@ -121,6 +124,10 @@ function setPosAndSizes(){
 
 
   }
+  
+
+ 
+
 
   // Arrow image
   rightarrowWidth = width/30;
@@ -131,7 +138,14 @@ function setPosAndSizes(){
   
   heartWidth = rightarrowHeight/1.5 * (heart.width/heart.height);
   
-  
+
+  toggleSwitchWidth = width/25;
+  toggleSwitchHeight = toggleSwitchWidth/2;
+
+  toggleSwitchX =   input.width+ input.x +( rightarrowX - heartWidth * 4 - (input.width + input.x ))/2;
+  toggleSwitchY = input.y + toggleSwitchWidth/4;
+
+  toggleSwitch =  new CustomSwitch(toggleSwitchX, toggleSwitchY,toggleSwitchWidth,toggleSwitchHeight);
 
  
 
@@ -194,8 +208,10 @@ function draw() {
     randomSeed();
     drawTextBox();
     borderForGraphicsAndInput();
+    toggleSwitch.display();
 
     for (let i = 0; i < lines.length; i++) {
+      
       stroke(lines[i].lineColor); 
       strokeWeight(lines[i].lineThickness);
       scribble.scribbleLine(lines[i].x1, lines[i].y1, lines[i].x2, lines[i].y2);
@@ -248,6 +264,7 @@ function draw() {
     if(UserAnswer === answers[GameRound] || elapsedtime > 60 || skip){
       Transition = true;
       startTransition();
+      
       UserAnswer = undefined
       if(skip){
         numSkips -= 1;
@@ -267,8 +284,9 @@ function draw() {
       drawTransitionScreen();
     }
     else{
+      clearLines();
       changeRound();
-      graphics.background(255);
+      
       Transition = false;
       skip = false;
       
@@ -345,7 +363,9 @@ function cursorShape(){
 
 
     fill(colorstate);
-    circle(mouseX,mouseY,strokeThickValue,strokeThickValue);
+    
+    circle(mouseX,mouseY,strokeThickValue);
+    
  
     
   }
@@ -358,23 +378,42 @@ function cursorShape(){
 
 
 function mouseDragged(){
-  
-  //graphics.stroke(colorstate);
-  //graphics.strokeWeight(strokeW);
-
+ 
 
   
-  lines.push({
-    x1: mouseX,
-    y1: mouseY,
-    x2: pmouseX,
-    y2: pmouseY,
-    lineColor: colorstate,
-    lineThickness: strokeThickValue
-  });
+  if(!toggleSwitch.on){
+    graphics.stroke(colorstate);
+    graphics.strokeWeight(strokeThickValue);
+    push();
+    
+  
+    graphics.line(mouseX - xPosOfGraphics,mouseY - yPosOfGraphics,pmouseX - xPosOfGraphics,pmouseY - yPosOfGraphics);
+    pop();
+  }
+  else{
+    let halfThickness = strokeThickValue/2;
+
+    let mousex = constrain(mouseX, xPosOfGraphics + halfThickness, xPosOfGraphics + graphics.width - halfThickness);
+    let mousey = constrain(mouseY, yPosOfGraphics + halfThickness, yPosOfGraphics + graphics.height - halfThickness);
+    let pmousex = constrain(pmouseX, xPosOfGraphics + halfThickness, xPosOfGraphics + graphics.width - halfThickness);
+    let pmousey = constrain(pmouseY, yPosOfGraphics + halfThickness, yPosOfGraphics + graphics.height - halfThickness);
+  
+    lines.push({
+        
+      x1: mousex,
+      y1: mousey,
+      x2: pmousex,
+      y2: pmousey,
+      lineColor: colorstate,
+      lineThickness: strokeThickValue
+    });
+  }
 
 
-}
+  }
+
+
+
 
 
 
@@ -426,6 +465,7 @@ function newText(){
 
 function clearLines(){
   lines = [];
+  graphics.background(255);
 }
 
 function mousePressed(){
@@ -441,6 +481,10 @@ function mousePressed(){
   }
   if(collidePointRect(mouseX,mouseY,trashcanX,trashcanY,trashcanWidth,trashcanHeight)){
     clearLines();
+
+  }
+  if(collidePointRect(mouseX,mouseY,toggleSwitchX - toggleSwitchWidth/2,toggleSwitchY - toggleSwitchHeight/2,toggleSwitchWidth,toggleSwitchHeight)){
+    toggleSwitch.on = !toggleSwitch.on;
 
   }
 
