@@ -27,7 +27,7 @@ let yPosOfGraphics;
 let coloredCircles = [];
 let circleColors = ["red", "orange", "yellow", "lime", "blue", "fuchsia", "black", "white" ];
 let messages = [
-  ["Draw a square then I triangle above it",
+  ["Draw a square then I triangle above it asfasdf asdf sadf asdf asdf asdf asdf asdf asdf adsfasdf asd fadf asdf sadf adf asdf sdf ",
     "Do not forget to put square eyes",
     "and a lengthy mouth"],
   ["This is the second round",
@@ -79,13 +79,19 @@ let lines = [];
 
 let toggleSwitch, toggleSwitchX, toggleSwitchY, toggleSwitchWidth, toggleSwitchHeight;
 
+let themeColors = ["#F8EDE3", "#BDD2B6", "#A2B29F", "#798777","#FFD4D4"];
+let backgroundImage;
+let titleFont;
+
 function preload(){
   trashcan  = loadImage("assets/trashClosed.png");
-  trashcanOpen = loadImage("assets/trashOpened.png")
+  trashcanOpen = loadImage("assets/trashOpened.png");
   rightarrow = loadImage("assets/rightarrow.png");
   heart = loadImage("assets/Heart.png");
   font = loadFont("assets/Font.ttf");
+  titleFont = loadFont("assets/titleFont.ttf");
   X = loadImage("assets/X.png");
+  backgroundImage = loadImage("assets/background.jpeg");
 }
 
 
@@ -106,12 +112,14 @@ function setPosAndSizes(){
   input.class("custom-input");
   input.size(graphics.width / 3,graphics.height/20);
   input.position(graphics.width/2 - input.width/2 + xPosOfGraphics, (yPosOfGraphics + graphics.height + height) / 2 - input.height/2);
-  input.style("font-size", "22px");
+  input.style("font-size", "1.5vw");
   input.style("text-transform", "uppercase");
   input.attribute("placeholder", "GUESS HERE");
   input.style("text-align", "center");
-  input.style("::placeholder", "text-shadow: 0 0 5px #000");
-  input.style("font-weight", "bold");
+
+  input.style("border", "1px solid #FFD4D4");
+
+  input.style("font-family", "font");
   
   input.changed(newText);
   
@@ -160,6 +168,7 @@ function startGame(){
   const selectedSize = canvasSizeDropdown.value;
   const startButton = document.querySelector("#startButton");
   const canvasSizeLabel = document.querySelector("#canvasSizeLabel");
+  const gameTitle = document.getElementById("gameTitle");
   const [widthStr, heightStr] = selectedSize.split("x");
 
 
@@ -176,6 +185,7 @@ function startGame(){
   canvasSizeDropdown.remove();
   canvasSizeLabel.remove();
   startButton.remove();
+  gameTitle.remove();
   createCanvas(canvasWidth,canvasHeight);
 
 
@@ -186,11 +196,20 @@ function startGame(){
 
 function setup() {
   createCanvas(windowWidth,windowHeight);
-  background(127);
+  image(backgroundImage,0,0,width,height);
   
  
   angleMode(DEGREES);
  
+  document.querySelector(".canvasSizeDropdown").addEventListener("click", function() {
+    this.classList.toggle("active");
+
+   
+    
+  });
+  
+  
+  // Remove the 'active' class when the mouse is released
 
   
 
@@ -201,7 +220,7 @@ function draw() {
   // Display a message or instructions until a canvas size is selected
   if(canvasSizeSelected && !Transition){
 
-    background(74,165,255);
+    background(themeColors[2]);
 
     image(graphics,xPosOfGraphics,yPosOfGraphics);
 
@@ -265,7 +284,7 @@ function draw() {
       Transition = true;
       startTransition();
       
-      UserAnswer = undefined
+      UserAnswer = undefined;
       if(skip){
         numSkips -= 1;
       }
@@ -280,7 +299,7 @@ function draw() {
       
       stime = startClock();
       input.style("display", "none");
-      background(0,millis()%60 * 0.5);
+      
       drawTransitionScreen();
     }
     else{
@@ -300,12 +319,12 @@ function draw() {
 function borderForGraphicsAndInput(){
   noFill();
   strokeWeight(5);
-  stroke(0);
+  stroke(themeColors[3]);
   //rect(xPosOfGraphics,yPosOfGraphics,graphics.width,graphics.height);
   scribble.scribbleRect(xPosOfGraphics + graphics.width/2,yPosOfGraphics + graphics.height/2,graphics.width,graphics.height);
 
   strokeWeight(5);
-  stroke(0);
+  stroke(themeColors[4]);
   scribble.scribbleRect(input.x + input.width/2,input.y + input.height/2,input.width,input.height);
 
 }
@@ -346,6 +365,12 @@ function changeRound(){
 }
 function drawTransitionScreen(){
   text("HI",width/2,height/2);
+  push();
+  tint(255,millis()%120 * 0.25);
+  image(backgroundImage,0,0,width,height);
+  pop();
+  
+  
 }
 function startTransition(){
   transitionStartTime = millis();
@@ -410,7 +435,7 @@ function mouseDragged(){
   }
 
 
-  }
+}
 
 
 
@@ -493,9 +518,9 @@ function mousePressed(){
 function drawTextBox(){
  
   
-  fill(255);
+ 
   strokeWeight(5);
-  stroke(255);
+  stroke(themeColors[0]);
   let textBoxWidth = (width - xPosOfGraphics * 2) * 0.9;
   let textBoxHeight = height/8.5;
   let textBoxX = xPosOfGraphics +textBoxWidth/2;
@@ -510,7 +535,7 @@ function drawTextBox(){
     YcordsFilling.push(y);
   }
   scribble.scribbleRect(textBoxX,textBoxY,textBoxWidth,textBoxHeight);
-  stroke(255);
+  stroke(themeColors[0]);
   strokeWeight(7);
   scribble.scribbleFilling(XcordsFilling,YcordsFilling,20,210);
 
@@ -521,14 +546,22 @@ function drawTextBox(){
   rectMode(CORNER);
 
 
-  fill(255,0,0); 
-  stroke(0);
+  fill(themeColors[2]); 
+  stroke(themeColors[3]);
+  strokeWeight(10);
+ 
   let textX = (width - xPosOfGraphics * 2) * 0.9  ; 
   let textY = height / 100 + height / 8.5 ; 
   textAlign(LEFT,TOP);
-  textFont(BOLD,32);
-  let message1 = messages[GameRound][messageIndex]; 
-  text(message1, width / 25, height / 36,textX,textY);
+  textSize(32);
+  textFont(font);
+
+
+  
+
+  let message1 = messages[GameRound][messageIndex];
+  textLeading(50);
+  text(message1, width / 25, height / 36 - 10,textX,textY );
   
   
   
@@ -538,9 +571,9 @@ function drawTextBox(){
 function clockTimer() {
   // Draw the circle
   
-  stroke(0);
+  stroke(themeColors[4]);
   strokeWeight(5);
-  fill(255);
+  fill(255,200);
   //circle(xPosOfGraphics + (width - xPosOfGraphics * 2) * 0.9 + height / 12.75, height / 100 + height / 8.5 / 2, height / 8.5);
 
   scribble.buildEllipse(xPosOfGraphics + (width - xPosOfGraphics * 2) * 0.9 + height / 12.75, height / 100 + height / 8.5 / 2, height / 17,height/17,width/750,0);
@@ -556,9 +589,9 @@ function updateClock() {
   push();
   noStroke();
   let end = map(elapsedtime,0,60,-90,270);
-  let color = map(end,-90,270,255,25);
-  fill(0,0,255,color);
-  arc(xPosOfGraphics + (width - xPosOfGraphics * 2) * 0.9 + height / 12.75, height / 100 + height / 8.5 / 2, height / 8.5 , height / 8.5 , -90, end,PIE);
+  let color = map(end,-90,270,25,255);
+  fill(121, 135, 119,color);   
+  arc(xPosOfGraphics + (width - xPosOfGraphics * 2) * 0.9 + height / 12.75, height / 100 + height / 8.5 / 2, height / 8.5 - 5 , height / 8.5 -5 , -90, end,PIE);
   if (elapsedtime >= 59) {
     startClock();
 
@@ -571,9 +604,5 @@ function startClock(){
   return startclock;
 }
 
-
-function TransitionScreen(){
-  text("hello",0,0);
-}
 
 

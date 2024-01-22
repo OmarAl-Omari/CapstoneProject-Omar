@@ -20,44 +20,84 @@
     <script src="path/to/p5.sound.js"></script>
 
     <style>
+
       .custom-input::placeholder {
-        text-shadow: 0 0 5px #dd0f0ffd;
+        text-shadow: 0 0 5px #0c5000;
       }
     </style>
     <style>
+      @font-face {
+          font-family: 'titleFont';  /* Use the font-family name corresponding to your font */
+          src: local('titleFont'), url('titleFont.ttf') format('truetype');
+      }
+
+      .gameTitle {
+          position: absolute;
+          font-size: 6vw;
+          left: 50%;
+          top: 20%;
+          text-align: center;
+          transform: translate(-50%, -50%) skew(-20deg, -2deg);
+          color: #EEEEEE; 
+          font-family: 'titleFont'
+          
+      
+
+          /*border: 3px solid #FF0000;   Border color matches text color */
+         /* padding: 10px;  /* Adjust padding as needed */
+        /* background-color: #FFF;  /* Background color for the box */
+      }
       .canvasSizeLabel {
        position: absolute;
-       font-size: 20px; /* Adjust the font size as needed */
+       font-size: 2.5vw; /* Adjust the font size as needed */
 
-       left: 100px; 
-       top: 5px;
+       left: 50%; 
+       top: 58%;
+       transform: translate(-50%, -50%);
+       font-family: "titleFont";
       }
       .canvasSizeDropdown {
         position: absolute;
         left: 50%;
-        top: 30%;
+        top: 65%;
         transform: translate(-50%, -50%);
-        width: 10%; /* Adjust the width as needed */
-       
-        height: 5%;
-        font-size: 14px;
-        color: #1a6906;
-        background-color: #3498db; 
+        width: 50%; /* Adjust the width as needed */
+        text-align: center;
+        font-family: "titleFont";
+        height: 10%;
+        font-size: 2.25vw;
+        color: #EDF1D6;
+        background-color: #393E46; 
 
-        border: 2px solid rgb(167, 28, 209);
+        border: 0.5vw  solid #222831;
         cursor: pointer;
+        transform-origin: center top;
+      }
+      .canvasSizeDropdown.active {
+        background-color: #798777d2; /* Change the color when pressed */
       }
       .startButton {
-      position: absolute;
-      width: 150px; /* Adjust the width as needed */
-      height: 30px; /* Adjust the height as needed */
-      font-size: 16px; /* Adjust the font size as needed */
+        position: absolute;
+        width: 50%; /* Adjust the width as needed */
+        height: 10%; /* Adjust the height as needed */
+         /* Adjust the font size as needed */
 
-      /* Calculate center position of the canvas */
-      left: 50%;
-      top: 60%; /* Adjust the vertical position as needed */
-      transform: translate(-50%, -50%); /* Center the button */
+        /* Calculate center position of the canvas */
+        left: 50%;
+        top: 50%; /* Adjust the vertical position as needed */
+        transform: translate(-50%, -50%); /* Center the button */
+        color: #EDF1D6;
+        background-color: #393E46; 
+        font-size: 3vw ;
+        font-family:'titleFont';
+        
+
+        border: 0.5vw solid #222831;
     }
+    .startButton:hover {
+      background-color: #798777d2; /* Change the background color on hover */
+    } 
+    /* #F8EDE3, #BDD2B6, #A2B29F, #798777 #FFD4D4 */
     </style>
 
     <!-- Once your project is working completely, you can comment out the link
@@ -71,6 +111,8 @@
 
   <body>
     <label id="canvasSizeLabel" for="canvasSize" class="canvasSizeLabel">Choose a canvas size:</label>
+    <label id="gameTitle" class="gameTitle">SCRIBBLY DRAWING GAME</label>
+
     <select id="canvasSize" class="canvasSizeDropdown">
       <option value= "400x200"> 400x200</option>
       <option value= "800x600"> 800x600</option>

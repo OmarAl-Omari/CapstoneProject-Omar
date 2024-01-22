@@ -24,12 +24,14 @@ class CustomSwitch {
       scribble.scribbleEllipse(buttonX, 0, this.circleRadius, this.circleRadius);
     } 
     else {
-      fill(200);
+      fill(themeColors[3]);
    
       rectMode(CENTER);
-      stroke(255, 0, 0);
+      stroke(themeColors[1]);
       strokeWeight(3);
       rect(0, 0, this.switchWidth, this.switchHeight, this.cornerRadius);
+      fill(themeColors[1]);
+      stroke(themeColors[2]);
       ellipse(buttonX, 0, this.circleRadius, this.circleRadius);
     }
 
