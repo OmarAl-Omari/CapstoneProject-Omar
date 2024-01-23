@@ -1,6 +1,6 @@
 
 class CustomSwitch {
-  constructor(x, y, switchWidth = 60, switchHeight = 30) {
+  constructor(x, y, switchWidth, switchHeight ) {
     this.x = x;
     this.y = y;
     this.switchWidth = switchWidth;
@@ -11,17 +11,17 @@ class CustomSwitch {
 
   }
 
-  display() {
+  display(s,themeColors) {
     push();
     translate(this.x, this.y);
     let buttonX = this.on ? this.switchWidth / 4 : -this.switchWidth / 4;
     // Switch body
     if (this.on) {
       stroke(255);
-      scribble.scribbleRoundedRect(0, 0, this.switchWidth, this.switchHeight, this.cornerRadius);
+      s.scribbleRoundedRect(0, 0, this.switchWidth, this.switchHeight, this.cornerRadius);
       fill(100);
       stroke(30);
-      scribble.scribbleEllipse(buttonX, 0, this.circleRadius, this.circleRadius);
+      s.scribbleEllipse(buttonX, 0, this.circleRadius, this.circleRadius);
     } 
     else {
       fill(themeColors[3]);

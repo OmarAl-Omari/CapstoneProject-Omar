@@ -12,15 +12,17 @@
 
     <!-- Linking to the main p5.js library, which allows your code to use all 
        p5 functions. Using this version while developing your code allows p5 
-       to provide more Friendly Error Messages if you mess something up...-->
+       to provide more Friendly Error Messages if you mess something up... Downlaoding all the libraries that are used-->
+
     <script src="libraries/p5.js"></script>
     <script src="libraries/p5.scribble.js"></script>
     <script src="libraries/p5.collide2d.js"></script>
-    <script src="/p5.js"></script>
+    <script src="libraries/p5.min.js"></script>
     <script src="path/to/p5.sound.js"></script>
+    <script src="libraries/p5.sound.min.js"></script>
+
 
     <style>
-
       .custom-input::placeholder {
         text-shadow: 0 0 5px #0c5000;
       }
@@ -106,9 +108,8 @@
        increases the speed of your program quite dramatically in some cases.-->
     <!-- <script src="libraries/p5.min.js"></script> -->
 
-    <script src="libraries/p5.sound.min.js"></script>
   </head>
-
+<!-- This is for the-->
   <body>
     <label id="canvasSizeLabel" for="canvasSize" class="canvasSizeLabel">Choose a canvas size:</label>
     <label id="gameTitle" class="gameTitle">SCRIBBLY DRAWING GAME</label>
