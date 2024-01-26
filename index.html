@@ -13,42 +13,40 @@
     <!-- Linking to the main p5.js library, which allows your code to use all 
        p5 functions. Using this version while developing your code allows p5 
        to provide more Friendly Error Messages if you mess something up... Downlaoding all the libraries that are used-->
+       <script src="libraries/p5.js"></script>
+       <script src="libraries/p5.scribble.js"></script>
+       <script src="libraries/p5.collide2d.js"></script>
+       <script src="libraries/p5.sound.min.js"></script>
+       <script src="sketch.js"></script>
+ 
 
-    <script src="libraries/p5.js"></script>
-    <script src="libraries/p5.scribble.js"></script>
-    <script src="libraries/p5.collide2d.js"></script>
-    <script src="libraries/p5.min.js"></script>
-    <script src="path/to/p5.sound.js"></script>
-    <script src="libraries/p5.sound.min.js"></script>
-
-
+    <!--Creating a shadow for my input-->
     <style>
       .custom-input::placeholder {
         text-shadow: 0 0 5px #0c5000;
       }
     </style>
     <style>
+      /*Getting the font that is called titleFont*/
       @font-face {
-          font-family: 'titleFont';  /* Use the font-family name corresponding to your font */
+          font-family: 'titleFont';  
           src: local('titleFont'), url('titleFont.ttf') format('truetype');
       }
-
+      /* Everything I created here it's size, and postion is based on the canvas size */
+      /*Customizing the game Title*/
       .gameTitle {
           position: absolute;
           font-size: 6vw;
           left: 50%;
           top: 20%;
           text-align: center;
-          transform: translate(-50%, -50%) skew(-20deg, -2deg);
+          transform: translate(-50%, -50%) skew(-20deg, -2deg); /* Make the title a little rotated*/
           color: #EEEEEE; 
           font-family: 'titleFont'
           
       
-
-          /*border: 3px solid #FF0000;   Border color matches text color */
-         /* padding: 10px;  /* Adjust padding as needed */
-        /* background-color: #FFF;  /* Background color for the box */
       }
+      /*Customizing the label that saze choose canvas*/
       .canvasSizeLabel {
        position: absolute;
        font-size: 2.5vw; /* Adjust the font size as needed */
@@ -58,11 +56,12 @@
        transform: translate(-50%, -50%);
        font-family: "titleFont";
       }
+      /*Customizing the query */
       .canvasSizeDropdown {
         position: absolute;
         left: 50%;
         top: 65%;
-        transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%); 
         width: 50%; /* Adjust the width as needed */
         text-align: center;
         font-family: "titleFont";
@@ -76,44 +75,37 @@
         transform-origin: center top;
       }
       .canvasSizeDropdown.active {
-        background-color: #798777d2; /* Change the color when pressed */
+        background-color: #798777d2; /* Change the color of the query when pressed */
       }
+      /*Customizing the game Title*/
       .startButton {
         position: absolute;
-        width: 50%; /* Adjust the width as needed */
-        height: 10%; /* Adjust the height as needed */
-         /* Adjust the font size as needed */
-
-        /* Calculate center position of the canvas */
+        width: 50%;
+        height: 10%; 
         left: 50%;
-        top: 50%; /* Adjust the vertical position as needed */
-        transform: translate(-50%, -50%); /* Center the button */
+        top: 50%; 
+        transform: translate(-50%, -50%); 
         color: #EDF1D6;
         background-color: #393E46; 
         font-size: 3vw ;
         font-family:'titleFont';
-        
-
         border: 0.5vw solid #222831;
     }
+
     .startButton:hover {
-      background-color: #798777d2; /* Change the background color on hover */
+      background-color: #798777d2; /* Change the background color on hover for the startButton */
     } 
-    /* #F8EDE3, #BDD2B6, #A2B29F, #798777 #FFD4D4 */
+
     </style>
 
-    <!-- Once your project is working completely, you can comment out the link
-       to p5.js above, and instead link to this minified version. The minified
-       version takes less space, and turns off Friendly Error Messages. This 
-       increases the speed of your program quite dramatically in some cases.-->
-    <!-- <script src="libraries/p5.min.js"></script> -->
 
   </head>
-<!-- This is for the-->
+
   <body>
+    <!--Creating the text for the text for the title and the text that tells the player to choose a canvas size-->
     <label id="canvasSizeLabel" for="canvasSize" class="canvasSizeLabel">Choose a canvas size:</label>
     <label id="gameTitle" class="gameTitle">SCRIBBLY DRAWING GAME</label>
-
+    <!--Creating the query options -->
     <select id="canvasSize" class="canvasSizeDropdown">
       <option value= "400x200"> 400x200</option>
       <option value= "800x600"> 800x600</option>
@@ -124,10 +116,12 @@
 
       
     </select>
+    <!--Crating a start button that start's the game if the player clicks on it-->
     <button id="startButton" class="startButton" onclick="startGame()"> Start Game</button>
 
     <script src="costumswitch.js"></script>
     <script src="colorcircles.js"></script>
+    <script src="message.js"></script>
     <script src="sketch.js"></script>
     
   </body>

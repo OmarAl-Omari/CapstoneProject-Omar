@@ -1,88 +1,94 @@
-// Project Title
-// Your Name
-// Date
-//
+// Scribble Drawing Game
+// Omar Al-Omari
+// 2024 January 25
+
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
-let strokeThickValue= 10;
 
-let graphics;
-let colorstate = "black";
-let input;
-let circlesD;
-let circleY;
-let messageIndex = 0 ;
-let clockAngle;
-let totalTime = 60;
-
-let startSecond;
-let stime;
-
+//Set the game round
+let GameRound = 9;
+let numOfGameRounds = 9;
 let canvasSizeSelected = false;
-let canvasWidth;
-let canvasHeight;
-
-let xPosOfGraphics;
-let yPosOfGraphics;
-let coloredCircles = [];
-let circleColors = ["red", "orange", "yellow", "lime", "blue", "fuchsia", "black", "white" ];
-let messages = [
-  ["Draw a square then I triangle above it asfasdf asdf sadf asdf asdf asdf asdf asdf asdf adsfasdf asd fadf asdf sadf adf asdf sdf ",
-    "Do not forget to put square eyes",
-    "and a lengthy mouth"],
-  ["This is the second round",
-    "hello"
-  ],
-  ["This is the third round"],
-  ["This is the fourth round"],
-  ["This is the fifth round"],
-  ["This is the sixth round"],
-  ["This is the seventh round"],
-  ["This is the eigthth round"],
-  ["This is the nineth round"],
-  ["This is the tenth round"],
-];
-let answers = ["HOUSE","2","3","4","5","6","7","8","9","10"];
-
-let GameRound = 0;
-
+//Global scribble library
 let scribble = new Scribble();
 
-let UserAnswer;
-let elapsedtime;
+let strokeThickValue= 10; //How thick the line is 
 
+let graphics; //For the graphics
+let colorState = "black"; //start with the color
+let input; //For the input 
+let messageIndex = 0 ; //Start at first message
+let UserAnswer; //Store the input from user
 
+//For the window demensions
+let canvasWidth;
+let canvasHeight;
+//x,y for the graphics
+let xPosOfGraphics;
+let yPosOfGraphics;
+
+//lists for my colored circles,lines,circleColors,and answers
+let coloredCircles = [];
+let lines = [];
+let circleColors = ["red", "orange", "yellow", "lime", "blue", "fuchsia", "black", "white" ];
+let answers = ["HOUSE","2","3","4","5","6","7","8","9","10"];
+
+let roundTimeDuration = 5; //Druation of each round
+let elapsedtime; // To see how much time has passed
+//For the colored circles
+let coloredCircleslesDiameter;
+
+//For my clock
+let clockX;
+let clockY;
+let clockRadius;
+let clockTimer;
+
+//For my transition screen 
 let transitionStartTime;
-let transitionDuration = 5000;
+let transitionDuration = 5000; // The duration
 let Transition = false;
+let transitionImages = [];
+//For my heart's asset
+let heart;
+let heartWidth;
+
+//For my arrow asset
+let rightArrow;
+let rightArrowX, rightArrowY,rightArrowWidth,rightArrowHeight;
+//For my skip button
 let skip = false;
 let numSkips = 3;
 
+let startTimerX = true; //Start the timer
 
-let trashcan;
-let trashcanOpen;
-let heart;
-let heartWidth;
-let rightarrow;
-let rightarrowX;
-let rightarrowY;
-let rightarrowWidth;
-let rightarrowHeight;
-let trashcanX, trashcanY, trashcanWidth, trashcanHeight;
-
-let font;
-
+//For my X when the player guesses wrong
 let X;
 let counterForX;
-let startTimerX = true;
-let lines = [];
 
+//For my trashcan asset
+let trashcan;
+let trashcanOpen;
+let trashcanX, trashcanY, trashcanWidth, trashcanHeight;
 let toggleSwitch, toggleSwitchX, toggleSwitchY, toggleSwitchWidth, toggleSwitchHeight;
 
-let themeColors = ["#F8EDE3", "#BDD2B6", "#A2B29F", "#798777","#FFD4D4"];
+//For my background asset
 let backgroundImage;
-let titleFont;
 
+//For my font assets
+let titleFont;
+let font;
+
+//For the text size/spacing
+let textSze;
+let textSpacing;
+
+//For my theme colors
+let themeColors = ["#F8EDE3", "#BDD2B6", "#A2B29F", "#798777","#FFD4D4"];
+//For bakcgroundMusic
+let backgroundMusic;
+//Volume slider
+let volumeSlider;
 
 //This function uploads all my assets
 function preload(){
@@ -90,7 +96,7 @@ function preload(){
   trashcan  = loadImage("assets/trashClosed.png");
   trashcanOpen = loadImage("assets/trashOpened.png");
   //For the skip arrow
-  rightarrow = loadImage("assets/rightarrow.png");
+  rightArrow = loadImage("assets/rightArrow.png");
   //Heart
   heart = loadImage("assets/Heart.png");
   //This font is used in the game
@@ -101,73 +107,82 @@ function preload(){
   X = loadImage("assets/X.png");
   //The image maded by me for the background
   backgroundImage = loadImage("assets/background.jpeg");
+  //load the transiton images
+  // for(let i = 0; i< messages.length ; i++){
+  //   transitionImages[i] = loadImage("assets/transitionimages"+[i]);
+  // }
+
+
 }
 
-
-
-
-function setPosAndSizes(){
-  xPosOfGraphics = width/30;
-  yPosOfGraphics = height/7.5;
-
-
-  input = createInput();
-  
-  graphics = createGraphics(width - xPosOfGraphics * 2,height/1.25);
-  graphics.background(255);
-  circlesD = sqrt(width*height)/30;
-
-  
+//To customzie the the input
+function customizeInput(){
   input.class("custom-input");
   input.size(graphics.width / 3,graphics.height/20);
   input.position(graphics.width/2 - input.width/2 + xPosOfGraphics, (yPosOfGraphics + graphics.height + height) / 2 - input.height/2);
   input.style("font-size", "1.5vw");
   input.style("text-transform", "uppercase");
   input.attribute("placeholder", "GUESS HERE");
-  input.style("text-align", "center");
-
+  input.style("text-align", "center"); //Display the text inside the input
   input.style("border", "1px solid #FFD4D4");
-
   input.style("font-family", "font");
-  
+  //Get the text and make it empty again
   input.changed(newText);
-  
-  clockAngle = - 90;
-
-  stime = startClock();
-
-  for(let i = 0; i < 8; i++){
-    coloredCircles[i] = new ColoredCircles(xPosOfGraphics + circlesD * i* 1.25 + circlesD , circleColors[i]); 
-
-
-  }
-  
-
- 
-
-
-  // Arrow image
-  rightarrowWidth = width/30;
-  rightarrowHeight = rightarrowWidth *(rightarrow.height/rightarrow.width);
-
-  rightarrowX = graphics.width;
-  rightarrowY = height -rightarrowHeight;
-  
-  heartWidth = rightarrowHeight/1.5 * (heart.width/heart.height);
-  
-
-  toggleSwitchWidth = width/25;
-  toggleSwitchHeight = toggleSwitchWidth/2;
-
-  toggleSwitchX =   input.width+ input.x +( rightarrowX - heartWidth * 4 - (input.width + input.x ))/2;
-  toggleSwitchY = input.y + toggleSwitchWidth/4;
-
-  toggleSwitch =  new CustomSwitch(toggleSwitchX, toggleSwitchY,toggleSwitchWidth,toggleSwitchHeight);
-
- 
-
 }
 
+function setPosAndSizes(){
+  //Setting the x,y pos for the graphics
+  xPosOfGraphics = width/30;
+  yPosOfGraphics = height/7.5;
+
+  textSze = width/60;
+  textSpacing = width/40;
+  
+  //Creating the input
+  input = createInput();
+
+  //creating the graphics (where the player draws)
+  graphics = createGraphics(width - xPosOfGraphics * 2,height/1.25);
+  graphics.background(255);
+
+  //Set the circles Diameter
+  coloredCircleslesDiameter = sqrt(width*height)/30;
+
+  //costomizing the input
+  customizeInput();
+
+  //Start the time for the clock
+  clockTimer = startClock();
+
+  //Creating the colored circles
+  for(let i = 0; i < 8; i++){
+    coloredCircles[i] = new ColoredCircles(xPosOfGraphics + coloredCircleslesDiameter * i* 1.25 + coloredCircleslesDiameter , circleColors[i]); 
+
+  }
+
+  //Setting the clock's x,y, and radius
+  clockX = xPosOfGraphics + (width - xPosOfGraphics * 2) * 0.9 + height / 12.75;
+  clockY = height / 100 + height / 8.5 / 2;
+  clockRadius = height / 17;
+  
+  // Arrow image Setting the x,y,width,height
+  rightArrowWidth = width/30;
+  rightArrowHeight = rightArrowWidth *(rightArrow.height/rightArrow.width);
+  rightArrowX = graphics.width;
+  rightArrowY = height -rightArrowHeight;
+  
+  //Setting the heart's width
+  heartWidth = rightArrowHeight/1.5 * (heart.width/heart.height);
+  
+  //Setting the toggle's width,height,x,y
+  toggleSwitchWidth = width/25;
+  toggleSwitchHeight = toggleSwitchWidth/2;
+  toggleSwitchX =   input.width+ input.x +( rightArrowX - heartWidth * 4 - (input.width + input.x ))/2;
+  toggleSwitchY = input.y + toggleSwitchWidth/4;
+  //Creating the toggle switch
+  toggleSwitch =  new CustomSwitch(toggleSwitchX, toggleSwitchY,toggleSwitchWidth,toggleSwitchHeight);
+
+}
 
 
 //This function is active when the player presses the start game botton
@@ -201,23 +216,50 @@ function startGame(){
   //Starting the game and setting the position and sizes of everything
   canvasSizeSelected = true;
   setPosAndSizes();
+
+  //Remove the slider for volume
+  volumeSlider.remove();
 }
+
 
 function setup() {
   //This is for the start Screen where the player can choose the game ratio and start the game
   createCanvas(windowWidth,windowHeight);
+  //Set background music
+  backgroundMusic = loadSound("assets/backgroundmusic.mp3",loaded);
+  //Make a volume slider
+  volumeSlider = createSlider(0, 1, 0.25,0.01); // Min, max, initial value
+  volumeSlider.size(width/10, height/100);
+  volumeSlider.position(width/2 - volumeSlider.width/2, height - volumeSlider.height*4); // Adjust the position of the slider
+  //Get the input of the volume 
+  volumeSlider.input(updateVolume);
   image(backgroundImage,0,0,width,height);
-  
+
   //Setting angle mode
   angleMode(DEGREES);
- 
+
   //This is for my query in my html file to check when the player clicks on it to change color
   document.querySelector(".canvasSizeDropdown").addEventListener("click", function() {
     this.classList.toggle("active");
     
   });
 
+
+
 }
+
+
+//Play the music
+function loaded(){
+  backgroundMusic.loop();
+
+}
+// Update volume based on the slider value
+function updateVolume() {
+  let volume = volumeSlider.value();
+  backgroundMusic.setVolume(volume);
+}
+
 // The main loop
 function draw() {
   //All of this is where the player can see the screen to play
@@ -233,17 +275,21 @@ function draw() {
     toggleSwitch.display(scribble,themeColors); //This is to display the toggle switch
 
 
-
+    //Creating the scribble lines
     for (let i = 0; i < lines.length; i++) {
-      
       stroke(lines[i].lineColor); 
       strokeWeight(lines[i].lineThickness);
+      
+
+   
       scribble.scribbleLine(lines[i].x1, lines[i].y1, lines[i].x2, lines[i].y2);
+      
     }
+
     //Setting a seed that is not random (under this nothing that is created by scribble will wiggle)
     randomSeed(100);
     //This is to display the skip button 
-    image(rightarrow,rightarrowX,rightarrowY,rightarrowWidth,rightarrowHeight);
+    image(rightArrow,rightArrowX,rightArrowY,rightArrowWidth,rightArrowHeight);
     //display the amount of hearts the player has left
     drawingHearts();
     //This is to display the trash with animation
@@ -282,7 +328,7 @@ function draw() {
       }
     }
     //Checking wether the user got the answer, lost on time or skipped
-    if(UserAnswer === answers[GameRound] || elapsedtime > 60 || skip){
+    if(UserAnswer === answers[GameRound] || elapsedtime > roundTimeDuration || skip){
       Transition = true; //Starting the loop for the transition screen
       startTransitionTimer(); //Start the timer for the transiton
 
@@ -307,12 +353,16 @@ function draw() {
     }
     //To check when the timer ends for the transition
     else{
+      //Stopping the game when we reach the ned
+      if(GameRound === numOfGameRounds){
+        noLoop();
+      }
       //Clear the graphics 
       clearLines();
       //Change the round number
       changeRound();
       //Reset the clock
-      stime = startClock();
+      clockTimer = startClock();
       //Getting out of this loop
       Transition = false;
       //Making sure that if the player skipped to set it back to false
@@ -324,6 +374,7 @@ function draw() {
   }
   
 }
+
 
 //This function is only to draw a scribbly border for the Graphic Screen and input
 function borderForGraphicsAndInput(){
@@ -356,25 +407,27 @@ function displayAndAnimateTrash(){
   }
 }
 
+
 //Function to draw the hearts
 function drawingHearts(){
   //Drawing the number of hearts based on how many skips the player has 
   if(numSkips === 3){
     for(let i = 4; i>=2; i-- ){
-      image(heart,rightarrowX - heartWidth * i,rightarrowY + heartWidth/4,heartWidth,rightarrowHeight/1.5);
+      image(heart,rightArrowX - heartWidth * i,rightArrowY + heartWidth/4,heartWidth,rightArrowHeight/1.5);
     }
   }
   else if(numSkips === 2){
 
-    image(heart,rightarrowX - heartWidth * 4,rightarrowY + heartWidth/4,heartWidth,rightarrowHeight/1.5);
-    image(heart,rightarrowX - heartWidth * 3,rightarrowY + heartWidth/4,heartWidth,rightarrowHeight/1.5);
+    image(heart,rightArrowX - heartWidth * 4,rightArrowY + heartWidth/4,heartWidth,rightArrowHeight/1.5);
+    image(heart,rightArrowX - heartWidth * 3,rightArrowY + heartWidth/4,heartWidth,rightArrowHeight/1.5);
 
   }
   else if(numSkips === 1){
-    image(heart,rightarrowX - heartWidth * 4,rightarrowY + heartWidth/4,heartWidth,rightarrowHeight/1.5);
+    image(heart,rightArrowX - heartWidth * 4,rightArrowY + heartWidth/4,heartWidth,rightArrowHeight/1.5);
 
   }
 }
+
 
 //This is only to change round of the game
 function changeRound(){
@@ -385,28 +438,52 @@ function changeRound(){
 
 //Function to display the elements for the transition screen
 function drawTransitionScreen(){
-  text("HI",width/2,height/2);
+  //Displaying the text
+
+  textAlign(CENTER,CENTER);
+  textSize(textSze * 2);
+  stroke(0);
+  fill(255);
+  text("The Answer Is: ",width*0.75,height*0.33);
+  text(answers[GameRound],width*0.75,height*0.5);  
+  
+  //Displaying a thank you when the game ends
+  if(GameRound === numOfGameRounds){
+    textSize(textSze * 3);
+    text("THANK YOU",width/2,height/2);
+    text("FOR PLAYING",width/2,height/2 + textSze*3);
+  }
+   
   push();
   //Giving it a nice animation for the transiton screen entering
   tint(255,millis()%120 * 0.25);
   image(backgroundImage,0,0,width,height); //displaying the background for the game
+
+  //Display the image of the answer
+  // let sizeOfImage = min(width,height) / 2;
+  // image(transitionImages[GameRound],sizeOfImage*2,height/2,sizeOfImage,sizeOfImage);
   pop();
   
+
   
 }
+
+
 //This function is only to start the transiton timer
 function startTransitionTimer(){
   transitionStartTime = millis();
-
 }
+
+
 //function to change the cursor shape based on the position of the mouse
 function cursorShape(){
 
   //if the mouse is insided the drawing area
   if(mouseX>=xPosOfGraphics && mouseX <= xPosOfGraphics + graphics.width && mouseY >= yPosOfGraphics && mouseY <= yPosOfGraphics + graphics.height){
     noCursor();
-    noStroke();
-    fill(colorstate);  
+    stroke(127,100);
+    strokeWeight(strokeThickValue/10);
+    fill(colorState);  
     circle(mouseX,mouseY,strokeThickValue);
   }
   //If the curson is not inside the drawing area
@@ -416,44 +493,44 @@ function cursorShape(){
 }
 
 
-
 //This function is to check if the player is drawing(dragging the mouse)
 function mouseDragged(){
+  
+  if(canvasSizeSelected && !Transition){
   //To check if the player did not set the scribble mode then draw a normal line
-  if(!toggleSwitch.on){
-    //Determine the color and the strokeThickness of the line
-    graphics.stroke(colorstate);
-    graphics.strokeWeight(strokeThickValue);
-    push();
-    //Creating the line based on the mouseX and mouseY positions
-    graphics.line(mouseX - xPosOfGraphics,mouseY - yPosOfGraphics,pmouseX - xPosOfGraphics,pmouseY - yPosOfGraphics);
-    pop();
-  }
-  else{
-    //Constrain the mouse postiion to only be inside the graphics border
-    let halfThickness = strokeThickValue/2;
-    let mousex = constrain(mouseX, xPosOfGraphics + halfThickness, xPosOfGraphics + graphics.width - halfThickness);
-    let mousey = constrain(mouseY, yPosOfGraphics + halfThickness, yPosOfGraphics + graphics.height - halfThickness);
-    let pmousex = constrain(pmouseX, xPosOfGraphics + halfThickness, xPosOfGraphics + graphics.width - halfThickness);
-    let pmousey = constrain(pmouseY, yPosOfGraphics + halfThickness, yPosOfGraphics + graphics.height - halfThickness);
-    //Give the information for the lines that are going to be created
-    //(x1,y1,x2,y2) based on the mouse position
-    lines.push({
-      
-      x1: mousex,
-      y1: mousey,
-      x2: pmousex,
-      y2: pmousey,
-      //Set the color and thickness of the lines
-      lineColor: colorstate,
-      lineThickness: strokeThickValue
-    });
-  }
+    if(!toggleSwitch.on){
+      //Determine the color and the strokeThickness of the line
+      graphics.stroke(colorState);
+      graphics.strokeWeight(strokeThickValue);
 
+      //Creating the line based on the mouseX and mouseY positions
+      graphics.line(mouseX - xPosOfGraphics,mouseY - yPosOfGraphics,pmouseX - xPosOfGraphics,pmouseY - yPosOfGraphics);
 
+    }
+    else{
+      //Constrain the mouse postiion to only be inside the graphics border
+      let halfThickness = strokeThickValue/2;
+      let mousex = constrain(mouseX, xPosOfGraphics + halfThickness, xPosOfGraphics + graphics.width - halfThickness);
+      let mousey = constrain(mouseY, yPosOfGraphics + halfThickness, yPosOfGraphics + graphics.height - halfThickness);
+      let pmousex = constrain(pmouseX, xPosOfGraphics + halfThickness, xPosOfGraphics + graphics.width - halfThickness);
+      let pmousey = constrain(pmouseY, yPosOfGraphics + halfThickness, yPosOfGraphics + graphics.height - halfThickness);
+      //Give the information for the lines that are going to be created
+      //(x1,y1,x2,y2) based on the mouse position
+      lines.push({
+        
+        x1: mousex,
+        y1: mousey,
+        x2: pmousex,
+        y2: pmousey,
+        //Set the color and thickness of the lines
+        lineColor: colorState,
+        lineThickness: strokeThickValue
+      });
+    }
 }
 
 
+}
 
 
 //Function to increase or decrease the line thickness if the mouseWheel is moved
@@ -468,6 +545,7 @@ function mouseWheel(event) {
     strokeThickValue+= event.delta/10;
   }
 }
+
 
 //Function to check the if the keyboard is pressed
 function keyPressed(){
@@ -506,16 +584,17 @@ function clearLines(){
   graphics.background(255);
 }
 
+
 //To detect if the mouse was pressed
 function mousePressed(){
   //To check if the mouse was hovering and pressed on one of the colored Circles
   for(let circles of coloredCircles){
     if(collidePointCircle(mouseX,mouseY,circles.pos.x,circles.pos.y, circles.diameter)){
-      colorstate = circles.color; //Change the color that is used to the same color that the circle had
+      colorState = circles.color; //Change the color that is used to the same color that the circle had
     }
   }
   //Check if the Player clicked on the skip arrow
-  if(collidePointRect(mouseX,mouseY,rightarrowX,rightarrowY + rightarrowHeight/3,rightarrowWidth,rightarrowHeight/4) && numSkips>0){
+  if(collidePointRect(mouseX,mouseY,rightArrowX,rightArrowY + rightArrowHeight/3,rightArrowWidth,rightArrowHeight/4) && numSkips>0){
     skip = true;
   }
   //Check if the player clicked on the trashcan
@@ -530,6 +609,8 @@ function mousePressed(){
   }
 
 }
+
+
 //This function is to draw everything That has to do with the text box
 function drawTextBox(){
 
@@ -567,8 +648,6 @@ function drawTextBox(){
   rectMode(CORNER);
 
 
-
-
   //Set the color for the text and thickness of the stroke
   fill(themeColors[2]); 
   stroke(themeColors[3]);
@@ -578,17 +657,18 @@ function drawTextBox(){
   let textY = height / 100 + height / 8.5 ; 
   //Align the text, Set the font and size
   textAlign(LEFT,TOP);
-  textFont(font,32);
+  textFont(font,textSze);
   //Setting what message of the text it should say
-  let message1 = messages[GameRound][messageIndex];
-  textLeading(50); //Setting the height difference between the text
+  let messageDisplayed = messages[GameRound][messageIndex];
+  textLeading(textSpacing); //Setting the height difference between the text
 
   //Displaying the text and setting it's range where the text is displayed
   //Text will go to the next line if it reaches the limit
-  text(message1, width / 25, height / 36 - 10,textX,textY );
+  text(messageDisplayed, width / 25, height / 36 - 10,textX,textY );
   
 
 }
+
 
 //Function to show the clock
 function displayClock() {
@@ -597,28 +677,30 @@ function displayClock() {
   strokeWeight(5);
   fill(255,200);
   //Create the scribbled circle
-  scribble.buildEllipse(xPosOfGraphics + (width - xPosOfGraphics * 2) * 0.9 + height / 12.75, height / 100 + height / 8.5 / 2, height / 17,height/17,width/750,0);
-  
+  scribble.buildEllipse(clockX,clockY, clockRadius,clockRadius,width/750,0);
 }
+
 
 //Function to update the timer and the arc
 function updateClock() {
   //Figure out how much seconds have passed
-  elapsedtime =  (millis() - stime)/1000;
+  elapsedtime =  (millis() - clockTimer)/1000;
   push();
   noStroke();
   //map the end of the arc based on the elapsedtime
-  let end = map(elapsedtime,0,60,-90,270);
+  let end = map(elapsedtime,0,roundTimeDuration,-90,270);
   //map the alpha for the arc to start bright and end dark
   let color = map(end,-90,270,25,255);
   //Fill the arc with the color and set the alpha that is mapped
   fill(121, 135, 119,color);   
   //Create the arc for the timer
-  arc(xPosOfGraphics + (width - xPosOfGraphics * 2) * 0.9 + height / 12.75, height / 100 + height / 8.5 / 2, height / 8.5 - 5 , height / 8.5 -5 , -90, end,PIE);
+  arc(clockX, clockY, 2*clockRadius-5 , 2*clockRadius-5 , -90, end,PIE);
 
   pop();  
 }
 
+
+//This function is used to reset the main clock for the game
 function startClock(){
   let startclock = millis();
   return startclock;
