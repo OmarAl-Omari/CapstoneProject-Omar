@@ -46,7 +46,7 @@
           
       
       }
-      /*Customizing the label that saze choose canvas*/
+      /*Customizing the label - text to the choose canvas*/
       .canvasSizeLabel {
        position: absolute;
        font-size: 2.5vw; /* Adjust the font size as needed */
@@ -55,6 +55,18 @@
        top: 58%;
        transform: translate(-50%, -50%);
        font-family: "titleFont";
+      }
+      /*Customizing the label for the volume text*/
+      .volume {
+        position: absolute;
+        font-size: 2.5vw; /* Adjust the font size as needed */
+
+        left: 50%; 
+        top: 92.5%;
+        transform: translate(-50%, -50%);
+        font-family: "titleFont";
+            
+      
       }
       /*Customizing the query */
       .canvasSizeDropdown {
@@ -102,9 +114,11 @@
   </head>
 
   <body>
-    <!--Creating the text for the text for the title and the text that tells the player to choose a canvas size-->
+    <!--Creating the text for the text for the title and the text that tells the player to choose a canvas size and for volume-->
     <label id="canvasSizeLabel" for="canvasSize" class="canvasSizeLabel">Choose a canvas size:</label>
     <label id="gameTitle" class="gameTitle">SCRIBBLY DRAWING GAME</label>
+    <label id="volume" class="volume">Volume: </label> 
+    
     <!--Creating the query options -->
     <select id="canvasSize" class="canvasSizeDropdown">
       <option value= "400x200"> 400x200</option>

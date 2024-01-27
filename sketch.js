@@ -6,7 +6,7 @@
 // - describe what you did to take this project "above and beyond"
 
 //Set the game round
-let GameRound = 9;
+let GameRound = 0;
 let numOfGameRounds = 9;
 let canvasSizeSelected = false;
 //Global scribble library
@@ -29,11 +29,12 @@ let yPosOfGraphics;
 
 //lists for my colored circles,lines,circleColors,and answers
 let coloredCircles = [];
-let lines = [];
+let lines = []; // For the scribble lines
+let normalLines = [];
 let circleColors = ["red", "orange", "yellow", "lime", "blue", "fuchsia", "black", "white" ];
-let answers = ["HOUSE","2","3","4","5","6","7","8","9","10"];
+let answers = ["WINDOW","PACMAN","MASK","PENCIL","CAT","ICECREAM","BUS","81","CANADA","ROCKET"];
 
-let roundTimeDuration = 5; //Druation of each round
+let roundTimeDuration = 180; //Druation of each round
 let elapsedtime; // To see how much time has passed
 //For the colored circles
 let coloredCircleslesDiameter;
@@ -108,9 +109,9 @@ function preload(){
   //The image maded by me for the background
   backgroundImage = loadImage("assets/background.jpeg");
   //load the transiton images
-  // for(let i = 0; i< messages.length ; i++){
-  //   transitionImages[i] = loadImage("assets/transitionimages"+[i]);
-  // }
+  for(let i = 0; i< messages.length ; i++){
+    transitionImages[i] = loadImage("assets/transitionImage0"+[i]+".png");
+  }
 
 
 }
@@ -193,6 +194,7 @@ function startGame(){
   const startButton = document.querySelector("#startButton");
   const canvasSizeLabel = document.querySelector("#canvasSizeLabel");
   const gameTitle = document.getElementById("gameTitle");
+  const volumeText = document.getElementById("volume");
   const [widthStr, heightStr] = selectedSize.split("x");
 
 
@@ -211,6 +213,7 @@ function startGame(){
   canvasSizeLabel.remove();
   startButton.remove();
   gameTitle.remove();
+  volumeText.remove();
   //Creating the canvas based on the selected ratio
   createCanvas(canvasWidth,canvasHeight);
   //Starting the game and setting the position and sizes of everything
@@ -219,6 +222,7 @@ function startGame(){
 
   //Remove the slider for volume
   volumeSlider.remove();
+  
 }
 
 
@@ -279,7 +283,6 @@ function draw() {
     for (let i = 0; i < lines.length; i++) {
       stroke(lines[i].lineColor); 
       strokeWeight(lines[i].lineThickness);
-      
 
    
       scribble.scribbleLine(lines[i].x1, lines[i].y1, lines[i].x2, lines[i].y2);
@@ -444,24 +447,25 @@ function drawTransitionScreen(){
   textSize(textSze * 2);
   stroke(0);
   fill(255);
-  text("The Answer Is: ",width*0.75,height*0.33);
+  text("The Answer Is: ",width*0.75,height*0.4);
   text(answers[GameRound],width*0.75,height*0.5);  
   
   //Displaying a thank you when the game ends
   if(GameRound === numOfGameRounds){
     textSize(textSze * 3);
-    text("THANK YOU",width/2,height/2);
-    text("FOR PLAYING",width/2,height/2 + textSze*3);
+    text("THANK YOU",width/2,height/7);
+    text("FOR PLAYING",width/2,height/7 + textSze*3);
   }
    
   push();
   //Giving it a nice animation for the transiton screen entering
   tint(255,millis()%120 * 0.25);
   image(backgroundImage,0,0,width,height); //displaying the background for the game
-
+  imageMode(CENTER);
   //Display the image of the answer
-  // let sizeOfImage = min(width,height) / 2;
-  // image(transitionImages[GameRound],sizeOfImage*2,height/2,sizeOfImage,sizeOfImage);
+  let sizeOfImage = min(width,height) / 1.5;
+  image(transitionImages[GameRound],sizeOfImage/2,height/2,sizeOfImage,sizeOfImage);
+  console.log(GameRound);
   pop();
   
 
@@ -497,23 +501,24 @@ function cursorShape(){
 function mouseDragged(){
   
   if(canvasSizeSelected && !Transition){
-  //To check if the player did not set the scribble mode then draw a normal line
+    //Constrain the mouse postiion to only be inside the graphics border
+    let halfThickness = strokeThickValue/2;
+    let mousex = constrain(mouseX, xPosOfGraphics + halfThickness, xPosOfGraphics + graphics.width - halfThickness);
+    let mousey = constrain(mouseY, yPosOfGraphics + halfThickness, yPosOfGraphics + graphics.height - halfThickness);
+    let pmousex = constrain(pmouseX, xPosOfGraphics + halfThickness, xPosOfGraphics + graphics.width - halfThickness);
+    let pmousey = constrain(pmouseY, yPosOfGraphics + halfThickness, yPosOfGraphics + graphics.height - halfThickness);
+    //To check if the player did not set the scribble mode then draw a normal line
     if(!toggleSwitch.on){
       //Determine the color and the strokeThickness of the line
       graphics.stroke(colorState);
       graphics.strokeWeight(strokeThickValue);
 
       //Creating the line based on the mouseX and mouseY positions
-      graphics.line(mouseX - xPosOfGraphics,mouseY - yPosOfGraphics,pmouseX - xPosOfGraphics,pmouseY - yPosOfGraphics);
+      graphics.line(mousex - xPosOfGraphics,mousey - yPosOfGraphics,pmousex - xPosOfGraphics,pmousey - yPosOfGraphics);
 
     }
     else{
-      //Constrain the mouse postiion to only be inside the graphics border
-      let halfThickness = strokeThickValue/2;
-      let mousex = constrain(mouseX, xPosOfGraphics + halfThickness, xPosOfGraphics + graphics.width - halfThickness);
-      let mousey = constrain(mouseY, yPosOfGraphics + halfThickness, yPosOfGraphics + graphics.height - halfThickness);
-      let pmousex = constrain(pmouseX, xPosOfGraphics + halfThickness, xPosOfGraphics + graphics.width - halfThickness);
-      let pmousey = constrain(pmouseY, yPosOfGraphics + halfThickness, yPosOfGraphics + graphics.height - halfThickness);
+      
       //Give the information for the lines that are going to be created
       //(x1,y1,x2,y2) based on the mouse position
       lines.push({
@@ -527,22 +532,24 @@ function mouseDragged(){
         lineThickness: strokeThickValue
       });
     }
-}
-
+  }
 
 }
 
 
 //Function to increase or decrease the line thickness if the mouseWheel is moved
 function mouseWheel(event) {
-  //Making sure that when decreasing the size it is not negative and putting a limit of 10 to  the size
-  if (strokeThickValue+ event.delta < 0){
-    if (strokeThickValue>10){
-      strokeThickValue-= Math.abs(event.delta/10);
+  // Making sure that when decreasing the size, it is not negative and putting a limit of 10 to the size
+  if (event.delta < 0) {
+    if (strokeThickValue + event.delta / 10 > 1) {  // Limiting the stroke thickness to a minimum of 1
+      strokeThickValue -= Math.abs(event.delta / 10);
     }
-  }
-  else{
-    strokeThickValue+= event.delta/10;
+  } 
+  else {
+    // Limiting the stroke thickness to a maximum of, let's say, 50 (you can adjust this limit as needed)
+    if (strokeThickValue + event.delta / 10 < 100) {
+      strokeThickValue += event.delta / 10;
+    }
   }
 }
 
